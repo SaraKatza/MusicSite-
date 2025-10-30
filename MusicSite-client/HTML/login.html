@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script defer src="../JS/login.js"></script>
+</head>
+<body>
+<header class="header">
+    <nav class="navbar">
+        <a href="../main.html" class="logo">
+            <span class="logo-purple">Music</span><span class="logo-green">Play</span>
+        </a>
+        <div class="nav-links">
+            <a href="register.html" class="auth-btn">הרשמה</a>
+        </div>
+        </nav>
+</header>
+
+    <main class="container form-container">
+        <form class="auth-form" onsubmit="login(event)">
+            <h2>התחברות</h2>
+            <div class="form-group">
+                <label for="email">אימייל</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">סיסמה</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">התחבר</button>
+            <p class="switch-form">אין לך חשבון? <a href="register.html">הירשם כאן</a></p>
+        </form>
+    </main>
+
+ <div id="custom-alert" class="custom-alert-modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span> 
+            <p id="alert-message"></p>
+            </div>
+    </div>
+    </body>
+</html>

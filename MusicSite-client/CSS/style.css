@@ -1,0 +1,970 @@
+:root {
+    --primary-color: #1DB954;
+    --background-color: #121212;
+    --card-color: #282828;
+    --text-color: #B3B3B3;
+    --light-text-color: #FFFFFF;
+    --search-bar-bg: #333;
+    --search-icon-color: #888;
+    --logo-purple: #8A2BE2;
+    --logo-green: #32CD32;
+    --button-bg: #444;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Header and Navigation */
+.header {
+    background-color: #000;
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 28px;
+    text-decoration: none;
+    font-family: 'Arial Black', sans-serif;
+    flex-shrink: 0;
+}
+
+.logo-purple {
+    color: var(--logo-purple);
+}
+
+.logo-green {
+    color: var(--logo-green);
+}
+
+.search-bar {
+    background-color: var(--search-bar-bg);
+    border-radius: 50px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    max-width: 500px;
+    margin: 0 40px;
+}
+
+.search-bar i {
+    color: var(--search-icon-color);
+    margin-left: 10px;
+    font-size: 1em;
+}
+
+.search-bar input {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--light-text-color);
+    font-size: 0.9em;
+}
+
+.search-bar input:focus {
+    outline: none;
+}
+
+.nav-links {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.guest-nav, .user-nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.welcome-text {
+    color: var(--light-text-color);
+    font-size: 14px;
+    margin-left: 12px;
+    font-weight: 600;
+}
+
+.logout-btn {
+    background-color: #d32f2f !important;
+    color: white !important;
+}
+
+.logout-btn:hover {
+    background-color: #b71c1c !important;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: var(--light-text-color);
+}
+
+.playlist-btn {
+    background-color: transparent;
+    border: 1px solid var(--text-color);
+    padding: 8px 15px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.playlist-btn i {
+    margin-left: 8px;
+}
+
+.auth-btn {
+    background-color: var(--button-bg);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.auth-btn:hover {
+    background-color: #555;
+}
+
+/* Main content */
+.container {
+    padding: 20px;
+}
+
+/* חיפוש בעמוד הראשי */
+.search-section {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.search-bar-main {
+    background-color: var(--search-bar-bg);
+    border-radius: 50px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    border: 2px solid #444;
+    transition: border-color 0.3s ease;
+}
+
+.search-bar-main:focus-within {
+    border-color: var(--primary-color);
+}
+
+.search-bar-main i {
+    color: var(--search-icon-color);
+    margin-left: 15px;
+    font-size: 1.1em;
+}
+
+.search-bar-main input {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--light-text-color);
+    font-size: 1em;
+    padding: 0 15px;
+}
+
+.search-bar-main input:focus {
+    outline: none;
+}
+
+.search-btn {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+    background-color: #1ed760;
+}
+
+.search-btn i {
+    color: #000;
+    font-size: 0.9em;
+}
+
+.song-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 2px solid var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.song-list-header h2 {
+    color: var(--light-text-color);
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.sort-options {
+    color: var(--text-color);
+}
+
+.sort-options span {
+    margin-left: 10px;
+}
+
+.sort-options a {
+    color: var(--primary-color);
+    text-decoration: none;
+    margin-left: 15px;
+    transition: color 0.3s ease;
+}
+
+.sort-options a:hover {
+    color: var(--light-text-color);
+}
+
+.latest-songs {
+    margin-bottom: 40px;
+}
+
+.songs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.song-card {
+    background-color: var(--card-color);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.3s ease;
+    border: 1px solid #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.song-card:hover {
+    background-color: #404040;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.song-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+.song-card h3 {
+    color: var(--light-text-color);
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.song-card p {
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+.song-card .downloads {
+    color: var(--primary-color);
+}
+
+/* Forms (Login/Register) */
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px);
+}
+
+.auth-form {
+    background-color: var(--card-color);
+    padding: 40px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.auth-form h2 {
+    color: var(--light-text-color);
+    margin-bottom: 25px;
+    font-size: 24px;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: right;
+}
+
+.form-group label {
+    display: block;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    border: 1px solid #555;
+    color: var(--light-text-color);
+    border-radius: 4px;
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: #000;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #1ed760;
+}
+
+.switch-form {
+    margin-top: 15px;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.switch-form a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* --- עיצוב המודאל המותאם אישית (Custom Alert) --- */
+
+/* מיכל המודאל - תצוגת רקע כהה (Overlay) */
+.custom-alert-modal {
+    display: none; /* מתחיל מוסתר */
+    position: fixed; /* נשאר במקום גם בגלילה */
+    z-index: 10000; /* ודא שהוא מעל כל האלמנטים */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.7); /* רקע כהה ושקוף */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* תוכן המודאל (התיבה המרכזית) - גדול יותר */
+.modal-content {
+    background-color: var(--card-color); /* משתמש בצבע הרקע של הטפסים */
+    margin: 10% auto; /* ממוקם גבוה יותר */
+    padding: 30px; /* ריווח גדול יותר */
+    border: 1px solid var(--primary-color); /* מסגרת בצבע ירוק ראשי */
+    width: 90%; 
+    max-width: 450px; /* רוחב גדול יותר */
+    border-radius: 10px; 
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4), 0 12px 40px 0 rgba(0,0,0,0.3);
+    text-align: center;
+    color: var(--light-text-color); 
+    position: relative;
+    animation: slideInTop 0.4s;
+}
+
+/* כפתור סגירה (X) */
+.close-btn {
+    color: var(--text-color);
+    position: absolute;
+    top: 10px;
+    left: 15px; /* ממוקם בצד שמאל */
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 20px;
+    transition: color 0.2s;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: var(--light-text-color);
+    text-decoration: none;
+}
+
+/* עיצוב הטקסט בתוך המודאל */
+#alert-message {
+    margin-top: 10px;
+    margin-bottom: 0;
+    font-size: 18px; 
+    font-weight: 600; 
+}
+
+/* אנימציות */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInTop {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* עמוד איזור אישי */
+.profile-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--card-color);
+    border-radius: 10px;
+}
+
+.profile-header h2 {
+    color: var(--light-text-color);
+    margin-bottom: 15px;
+}
+
+.user-info {
+    color: var(--text-color);
+    font-size: 16px;
+}
+
+.profile-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.profile-card {
+    background-color: var(--card-color);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #444;
+}
+
+.profile-card h3 {
+    color: var(--light-text-color);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.profile-card h3 i {
+    margin-left: 10px;
+    color: var(--primary-color);
+}
+
+.profile-details {
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.profile-details p {
+    margin-bottom: 10px;
+}
+
+.profile-details strong {
+    color: var(--light-text-color);
+}
+
+.favorites-list, .my-songs-list {
+    color: var(--text-color);
+}
+
+.favorite-item, .song-item {
+    background-color: #333;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.favorite-item p, .song-item p {
+    margin: 5px 0;
+}
+
+.favorite-item strong, .song-item strong {
+    color: var(--light-text-color);
+}
+
+/* כרטיס זמר - עיצוב מרכזי */
+.singer-card-section {
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+    padding-inline: 12px;
+}
+
+.singer-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    background-color: var(--card-color);
+    padding: 28px;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.singer-card-left, .singer-card-center, .singer-card-right {
+    display: flex;
+    align-items: center;
+}
+
+.singer-card-left {
+    flex: 0 0 auto;
+}
+
+.singer-avatar {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+.singer-card-center {
+    flex-direction: column;
+    text-align: center;
+}
+
+.singer-name {
+    color: var(--light-text-color);
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.singer-email {
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+.singer-card-right {
+    margin-left: 15px;
+}
+
+.edit-btn {
+    background: transparent;
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.singer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+}
+
+.songs-list {
+    margin-top: 18px;
+}
+
+.song-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2b2b2b;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.song-info h3 {
+    color: var(--light-text-color);
+    margin: 0 0 4px 0;
+}
+
+.song-meta {
+    color: var(--text-color);
+    font-size: 13px;
+    margin: 0;
+}
+
+.song-actions button {
+    margin-left: 8px;
+    min-width: 80px;
+}
+
+/* כפתור הוספה קטן ומעודן */
+.add-song-btn.small {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* כותרת השירים שלי מעוצבת וממוקדת */
+.my-songs-title {
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--light-text-color);
+    margin: 0;
+}
+
+/* כפתורי אייקון ל-עריכה/מחיקה */
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.08s ease;
+}
+
+.icon-btn i {
+    font-size: 16px;
+}
+
+.icon-btn:hover {
+    background-color: rgba(255,255,255,0.06);
+    color: var(--light-text-color);
+    transform: translateY(-2px);
+}
+
+.icon-btn.delete-song:hover {
+    background-color: rgba(211,47,47,0.16);
+    color: #ffbaba;
+}
+
+.icon-btn.edit-song:hover {
+    background-color: rgba(29,185,84,0.12);
+    color: #bff3c5;
+}
+
+/* כפתור הוסף שיר בולט */
+.add-song-btn.primary {
+    background: linear-gradient(90deg, var(--primary-color), #1ed760);
+    color: #000;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-weight: bold;
+    box-shadow: 0 6px 18px rgba(29,185,84,0.12);
+}
+
+/* תמונת שיר ברשימה */
+.song-thumb {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-left: 12px;
+}
+
+/* ברכת שלום ב-header - נכלל כבר למעלה */
+/* .welcome-text {
+    color: var(--light-text-color);
+    font-size: 14px;
+    margin-left: 12px;
+    font-weight: 600;
+} */
+
+/* הכותרת של השירים יותר בולטת - נכלל כבר למעלה */
+/* .my-songs-title {
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--light-text-color);
+} */
+
+@media (max-width: 640px) {
+    .singer-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .singer-card-right {
+        margin-left: 0;
+        margin-top: 8px;
+    }
+
+    .singer-avatar {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* שינויים ספציפיים לעמוד הזמר: להקטין שוליים צדדיים ולהגדיל תמונה ושם - נכלל כבר למעלה */
+/* .singer-card-section {
+    padding-inline: 12px;
+}
+
+.singer-card {
+    gap: 28px;
+    padding: 28px;
+}
+
+.singer-avatar {
+    width: 180px;
+    height: 180px;
+}
+
+.singer-name {
+    font-size: 36px;
+    font-weight: 800;
+} */
+
+@media (max-width: 900px) {
+    .singer-avatar {
+        width: 150px;
+        height: 150px;
+    }
+
+    .singer-name {
+        font-size: 28px;
+    }
+}
+
+@media (min-width: 768px) {
+    .profile-content {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .profile-card:first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+/* toast notifications */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none; /* allow clicks through container except on toasts */
+}
+.toast-container .toast {
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 10px 14px;
+    margin-top: 8px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    font-size: 14px;
+    pointer-events: auto; /* make toast clickable if needed */
+    max-width: 90vw;
+    word-break: break-word;
+}
+
+#singerSelect {
+     width: 200px; margin: 20px auto; display: block; 
+}
+
+/* Suggestions Dropdown */
+.suggestions-dropdown {
+    position: absolute;
+    background: var(--card-color);
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+.suggestions-dropdown div {
+    padding: 10px;
+    cursor: pointer;
+}
+.suggestions-dropdown div:hover {
+    background: var(--primary-color);
+}
+
+/* Recommendations */
+.recommendations .songs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+/* Global Player Bar */
+.global-player-bar {
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+    background: linear-gradient(to top, var(--card-color), #282828);
+    border-top: 1px solid #333;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.player-info { display: flex; align-items: center; gap: 10px; }
+.player-controls { display: flex; align-items: center; gap: 10px; }
+.player-actions { display: flex; gap: 10px; }
+.player-controls input[type="range"] {
+    accent-color: var(--primary-color); /* התקדמות ירוקה */
+    width: 300px;
+    margin: 0 10px;
+}
+
+/* Lyrics Modal */
+#lyricsContent {
+    white-space: pre-line;
+    text-align: right;
+}
+
+/* Song Image Hover - עדין ונקי */
+.song-image-container {
+    position: relative;
+    cursor: pointer;
+    transition: filter 0.3s ease;
+}
+
+.song-image-container:hover .song-image {
+    filter: brightness(1.1);
+}
+
+.play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    color: var(--primary-color);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.song-image-container:hover .play-overlay {
+    opacity: 1;
+}
+
+/* Toast Popup - מלמעלה, אנימציה עדינה */
+#songEndToast {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; top: 0; }
+    to { opacity: 1; top: 20px; }
+}
+
+/* Modal לבחירת קטגוריה/זמר */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content-selection {
+    background-color: var(--card-color);
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+    position: relative;
+    border: 1px solid var(--primary-color);
+}
+
+.modal-content-selection h2 {
+    color: var(--light-text-color);
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+}
+
+.selection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.selection-item {
+    background-color: #333;
+    padding: 15px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-color);
+    border: 1px solid transparent;
+}
+
+.selection-item:hover {
+    background-color: var(--primary-color);
+    color: #000;
+    transform: translateX(-5px);
+    border-color: var(--primary-color);
+}

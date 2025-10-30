@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>איזור אישי - נגן מוזיקה</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <a href="../main.html" class="logo">
+                <span class="logo-purple">Music</span><span class="logo-green">Play</span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <!-- אלמנטים שיוצגו למשתמש לא מחובר -->
+                <div id="guestNav" class="guest-nav">
+                    <a href="../main.html" class="auth-btn">דף הבית</a>
+                    <a href="./login.html" class="auth-btn">התחברות</a>
+                    <a href="./register.html" class="auth-btn">הרשמה</a>
+                </div>
+                <!-- אלמנטים שיוצגו למשתמש מחובר -->
+                <div id="userNav" class="user-nav" style="display: none;">
+                    <a href="../main.html" class="auth-btn" id="homeBtn">דף הבית</a>
+                    <span id="welcomeMessage" class="welcome-text">שלום, </span>
+                    <a href="#" class="auth-btn" id="profileBtn">
+                        <i class="fas fa-user"></i>
+                        איזור אישי
+                    </a>
+                    <a href="#" class="auth-btn logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        התנתק
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="profile-section">
+            <div class="profile-header">
+                <h2>איזור אישי</h2>
+                <div class="user-info" id="userInfo"><!--מציג את הפרטים האישיים של המשתמש-->
+                    <!-- המידע יטען דרך JavaScript -->
+                </div>
+            </div>
+
+            <div class="profile-content">
+                <div class="profile-card">
+                    <h3><i class="fas fa-user"></i> פרטים אישיים</h3>
+                    <div class="profile-details" id="profileDetails">
+                        <!-- הפרטים יטענו דרך JavaScript -->
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <h3><i class="fas fa-heart"></i> השירים המועדפים שלי</h3>
+                    <div class="favorites-list" id="favoritesList">
+                        <p>טוען רשימת מועדפים...</p>
+                    </div>
+                </div>
+
+                <div class="profile-card" id="singerSection" style="display: none;">
+                    <h3><i class="fas fa-music"></i> השירים שלי</h3>
+                    <div class="my-songs-list" id="mySongsList">
+                        <p>טוען את השירים שלך...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../JS/profile.js"></script>
+</body>
+</html>

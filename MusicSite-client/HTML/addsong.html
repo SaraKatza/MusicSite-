@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>singer</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script defer src="../JS/singer-dashboard.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <a href="../main.html" class="logo">
+                <span class="logo-purple">Music</span><span class="logo-green">Play</span>
+            </a>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="חפש שיר, אמן או אלבום...">
+            </div>
+            <div class="nav-links">
+                <a href="#" class="playlist-btn"><i class="fas fa-list"></i> רשימות השמעה</a>
+                <a href="../main.html" class="auth-btn" onclick="logout()">התנתק</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h2>דשבורד זמר</h2>
+        
+        <!-- הוספת שיר חדש -->
+        <section class="form-container">
+            <form id="add-song-form" class="auth-form">
+                <h3>הוסף שיר חדש</h3>
+                <div class="form-group">
+                    <label for="song-name">שם השיר</label>
+                    <input type="text" id="song-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">קטגוריה</label>
+                    <select id="category" required>
+                        <option value="">בחר קטגוריה</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="song-file">קובץ שיר (MP3)</label>
+                    <input type="file" id="song-file" accept="audio/*" required>
+                </div>
+                <div class="form-group">
+                    <label for="song-img">תמונת כיסוי</label>
+                    <input type="file" id="song-img" accept="image/*">
+                </div>
+                <button type="submit" class="btn">הוסף שיר</button>
+            </form>
+        </section>
+
+        <!-- רשימת שירים -->
+        <section class="latest-songs">
+            <h3>השירים שלי</h3>
+            <div id="songs-grid" class="songs-grid">
+                <!-- יטען דינמית -->
+            </div>
+        </section>
+
+        <!-- עדכון פרטים אישיים -->
+        <section class="form-container">
+            <form id="update-profile-form" class="auth-form">
+                <h3>עדכן פרטים אישיים</h3>
+                <div class="form-group">
+                    <label for="update-name">שם</label>
+                    <input type="text" id="update-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-email">אימייל</label>
+                    <input type="email" id="update-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-password">סיסמה חדשה</label>
+                    <input type="password" id="update-password">
+                </div>
+                <div class="form-group">
+                    <label for="update-img">תמונת פרופיל</label>
+                    <input type="file" id="update-img" accept="image/*">
+                </div>
+                <button type="submit" class="btn">עדכן</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

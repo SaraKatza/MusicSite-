@@ -1,0 +1,28 @@
+# Node modules
+**/node_modules/
+
+# Env files
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+npm-debug.log*
+Yarn.lock
+
+# Uploads (user content)
+**/public/uploads/
+**/uploads/
+
+# Build artifacts
+dist/
+build/
+
+# Misc
+*.log

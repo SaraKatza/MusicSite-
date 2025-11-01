@@ -28,11 +28,6 @@ const uploadFields = upload.fields([
 ]);
 const router = express.Router();
 
-// ניתוב זה דורש התחברות (JWT)
-router.get('/recommendations', authenticateJWT, getRecommendations);
-
-
-
 // הוספת שיר חדש (זמר בלבד)
 router.post("/",  isSinger,uploadFields, validateJoiSchema(songValidator.post), addSong);
 
@@ -40,6 +35,7 @@ router.post("/",  isSinger,uploadFields, validateJoiSchema(songValidator.post), 
 router.get("/", getAllSongs);
 
 router.get("/by-category/:categoryId", getSongsByCategory);
+router.get("/by-singer/:idSinger", getSongsBySinger);
 
 // קבלת שיר לפי ID
 router.get("/:id", getSong);

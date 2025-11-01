@@ -32,7 +32,7 @@ function checkLoginAndShowNav() {
 }
 async function loadsongs() {
 
-        songs= await fetch(`${baseURL}/api/songs?singer=${objdata.id}`, {
+        songs= await fetch(`${baseURL}/api/songs?singerId=${objdata.id}`, {
         method: 'GET',
     })  
         .then(response => response.json())
@@ -42,17 +42,17 @@ async function loadsongs() {
             songs.forEach(song => {
                 const songItem = document.createElement('div');
                 songItem.className = 'song-item';
-                songItem.innerHTML = `
-                    <img class="song-thumb" src="${song.urlImg ? `${baseURL}/${song.urlImg}` : ''}" alt="עטיפת שיר">    
-                    <div class="song-info">
-                        <h3>${song.name || 'שיר ללא שם'}</h3>
-                        <p class="song-meta">קטגוריה: ${song.categoryId || 'לא צויין'} · הועלה: ${new Date(song.creationDate).toLocaleDateString('he-IL')}</p>
-                    </div>
-                    <div class="song-actions">
-                        <button class="icon-btn edit-song" title="ערוך"><i class="fas fa-pen"></i></button>
-                        <button class="icon-btn delete-song" title="מחק"><i class="fas fa-trash"></i></button>
-                    </div>
-                `;
+                    songItem.innerHTML = `
+                        <img class="song-thumb" src="${song.urlImg ? `${baseURL}/${song.urlImg}` : ''}" alt="עטיפת שיר">    
+                        <div class="song-info">
+                            <h3>${song.name || 'שיר ללא שם'}</h3>
+                            <p class="song-meta">קטגוריה: ${song.categoryId?.name || 'לא צויין'} · הועלה: ${new Date(song.creationDate).toLocaleDateString('he-IL')} · הורדות: ${song.DownloadCount ?? 0}</p>
+                        </div>
+                        <div class="song-actions">
+                            <button class="icon-btn edit-song" title="ערוך"><i class="fas fa-pen"></i></button>
+                            <button class="icon-btn delete-song" title="מחק"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
                 divlistsongs.appendChild(songItem);
             });
         })
@@ -190,7 +190,7 @@ if (addSongForm) {
         const categoryText = document.getElementById('songCategory').selectedOptions[0]?.textContent || '';
         const urlSongFile = document.getElementById('songFile').files[0] || null;
         const urlImgFile = document.getElementById('songImage').files[0] || null;
-        const password = document.getElementById('password').value.trim();  
+        // const password = document.getElementById('password').value.trim();  
 
         if (!name) { showToast('אנא הכנס שם שיר'); return; }
         if (!categoryId) { showToast('אנא בחר קטגוריה'); return; }

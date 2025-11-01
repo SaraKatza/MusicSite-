@@ -1,6 +1,7 @@
 import { Category } from "../models/category.models.js";
 import { categoryValidator } from "../models/category.models.js";
 import mongoose from 'mongoose';
+import path from 'path';
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 

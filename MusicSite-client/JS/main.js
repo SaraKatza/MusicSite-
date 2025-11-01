@@ -93,7 +93,7 @@ async function loadSongs(sortBy = 'creationDate', search = '') {
         
         // פילטר לפי קטגוריה
         if (currentFilter.type === 'category' && currentFilter.id) {
-            url += `&categoryId=${currentFilter.id}`;
+            url = `${baseUrl}/api/songs/by-category/${currentFilter.id}?sortBy=${sortBy}&order=desc`;
         }
         // פילטר לפי זמר
         if (currentFilter.type === 'singer' && currentFilter.id) {
@@ -104,12 +104,16 @@ async function loadSongs(sortBy = 'creationDate', search = '') {
             url += `&search=${encodeURIComponent(search)}`;
         }
         
-        if (!isLoggedIn) url += '&limit=4';
+        // if (!isLoggedIn) url += '&limit=4';
 
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token || ''}` }
         });
         if (!response.ok) throw new Error('תקלה בטעינת השירים');
+        if(response.status === 204) {
+            document.getElementById('songsGrid').innerHTML = '<p style="text-align: center; color: var(--text-color); padding: 40px;">אין שירים מתאימים.</p>';
+            return;
+        }
 
         const songs = await response.json();
         const songsGrid = document.getElementById('songsGrid');
@@ -127,17 +131,17 @@ async function loadSongs(sortBy = 'creationDate', search = '') {
 
         updatePageTitle();
 
-        const teaserMessage = document.getElementById('teaserMessage');
-        const sortOptions = document.querySelector('.sort-options');
-        if (!isLoggedIn) {
-            teaserMessage.style.display = 'block';
-            sortOptions.style.display = 'none';
-        } else {
-            teaserMessage.style.display = 'none';
-            sortOptions.style.display = 'flex';
-            document.getElementById('recommendationsSection').style.display = 'block';
-            loadRecommendations();
-        }
+        // const teaserMessage = document.getElementById('teaserMessage');
+        // const sortOptions = document.querySelector('.sort-options');
+        // if (!isLoggedIn) {
+        //     teaserMessage.style.display = 'block';
+        //     sortOptions.style.display = 'none';
+        // } else {
+        //     teaserMessage.style.display = 'none';
+        //     sortOptions.style.display = 'flex';
+        //     document.getElementById('recommendationsSection').style.display = 'block';
+        //     loadRecommendations();
+        // }
     } catch (err) {
         console.error('שגיאה בטעינת השירים:', err);
         document.getElementById('songsGrid').innerHTML = `<p style="text-align: center; color: var(--text-color);">שגיאה: ${err.message}</p>`;
@@ -267,25 +271,25 @@ function searchSongs() {
 }
 
 // המלצות
-async function loadRecommendations() {
-    try {
-        const token = localStorage.getItem('authToken');
-        const baseUrl = 'http://localhost:3000';
-        const response = await fetch(`${baseUrl}/api/songs/recommendations`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!response.ok) return;
-        const recs = await response.json();
-        const grid = document.getElementById('recommendationsGrid');
-        grid.innerHTML = '';
-        recs.forEach(song => {
-            const card = createSongCard(song, baseUrl);
-            grid.appendChild(card);
-        });
-    } catch (err) {
-        console.error(err);
-    }
-}
+// async function loadRecommendations() {
+//     try {
+//         const token = localStorage.getItem('authToken');
+//         const baseUrl = 'http://localhost:3000';
+//         const response = await fetch(`${baseUrl}/api/songs/recommendations`, {
+//             headers: { 'Authorization': `Bearer ${token}` }
+//         });
+//         if (!response.ok) return;
+//         const recs = await response.json();
+//         const grid = document.getElementById('recommendationsGrid');
+//         grid.innerHTML = '';
+//         recs.forEach(song => {
+//             const card = createSongCard(song, baseUrl);
+//             grid.appendChild(card);
+//         });
+//     } catch (err) {
+//         console.error(err);
+//     }
+// }
 
 // כרטיס שיר
 function createSongCard(song, baseUrl) {
@@ -306,7 +310,7 @@ function createSongCard(song, baseUrl) {
     `;
     
     card.querySelector('.song-image-container').addEventListener('click', () => {
-        playAudio(song._id, `${baseUrl}${song.urlSong}`, song.name, song.idSinger.name, `${baseUrl}${song.urlImg}`);
+        playAudio(song._id, `${baseUrl}${song.urlSong}`, song.name, song.idSinger?.name || 'זמר לא ידוע', `${baseUrl}${song.urlImg}`);
     });
     return card;
 }

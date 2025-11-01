@@ -1,9 +1,9 @@
+
 import { Song } from '../models/song.models.js';
 import { Favorite } from '../models/favorite.models.js';
 import mongoose from 'mongoose';
-
+import path from 'path';
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
-
 // יצירת שיר חדש
 export async function addSong(req, res, next) {
     try {
@@ -48,15 +48,20 @@ export async function addSong(req, res, next) {
         return next({ message: `Failed to add song: ${err.message}`, status: 500 });
     }
 }
-
 // ------------------------------------------------------------------
 // שליפת כל השירים
 // ------------------------------------------------------------------
 export async function getAllSongs(req, res, next) {
     try {
         console.log("singer" ,req.query);
-        if(req.query.singer!=null){
+        if(req.query.singerId!=null){
             return getSongsBySinger(req, res, next);
+        }
+        if(req.query.categoryId!=null){
+            return getSongsByCategory(req, res, next);
+        }
+        if(req.query.search!=null){
+            return getSongsBySearch(req, res, next);
         }
         const songs = await Song.find()
             .populate('idSinger', 'name') // שליפת שם הזמר
@@ -151,10 +156,11 @@ export async function deleteSong(req, res, next) {
 // ------------------------------------------------------------------
 export async function getSongsBySinger(req, res, next) {
     try {
-        const singerId = req.query.singer;
+        const singerId = req.query.singerId;
         console.log('Singer ID:', singerId);
         if (!isValidId(singerId)) return next({ message: 'Invalid singer id', status: 400 });
         const songs = await Song.find({ idSinger: singerId })
+            .populate('idSinger', 'name') // שליפת שם הזמר
             .populate('categoryId', 'name'); // שליפת שם הקטגוריה
         if (!songs.length) {
             return next({ message: 'No songs found for this singer', status: 404 });
@@ -164,7 +170,19 @@ export async function getSongsBySinger(req, res, next) {
         return next({ message: `Failed to retrieve singer's songs: ${err.message}`, status: 500 });
     }
 }
-
+export async function getSongsBySearch(req, res, next) {
+    try {
+        const { search = '' } = req.query;
+        if (!search) return next({ message: 'Missing search term', status: 400 });
+        const songs = await Song.find({ name: { $regex: search, $options: 'i' } })
+            .populate('idSinger', 'name')
+            .populate('categoryId', 'name');
+        if (!songs.length) return next({ message: 'No songs found', status: 204 });
+        res.status(200).json(songs);
+    } catch (err) {
+        next({ message: `Failed to search songs: ${err.message}`, status: 500 });
+    }
+}
 //הורדת שיר עם תוקן
 export async function downloadSong(req, res, next) {
     try {
@@ -185,6 +203,7 @@ export async function downloadSong(req, res, next) {
         next({ message: `Failed to download song: ${err.message}`, status: 500 });
     }
 }
+
 //שירים לפי קטגוריות
 export async function getSongsByCategory(req, res, next) {
     try {

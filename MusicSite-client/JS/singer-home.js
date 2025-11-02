@@ -42,6 +42,7 @@ async function loadsongs() {
             songs.forEach(song => {
                 const songItem = document.createElement('div');
                 songItem.className = 'song-item';
+                songItem.dataset.songId = song._id; // הוספת מזהה השיר ל-dataset
                     songItem.innerHTML = `
                         <img class="song-thumb" src="${song.urlImg ? `${baseURL}/${song.urlImg}` : ''}" alt="עטיפת שיר">    
                         <div class="song-info">
@@ -49,8 +50,8 @@ async function loadsongs() {
                             <p class="song-meta">קטגוריה: ${song.categoryId?.name || 'לא צויין'} · הועלה: ${new Date(song.creationDate).toLocaleDateString('he-IL')} · הורדות: ${song.DownloadCount ?? 0}</p>
                         </div>
                         <div class="song-actions">
-                            <button class="icon-btn edit-song" title="ערוך"><i class="fas fa-pen"></i></button>
-                            <button class="icon-btn delete-song" title="מחק"><i class="fas fa-trash"></i></button>
+                            <button class="icon-btn edit-song" title="ערוך" data-song-id="${song._id}"><i class="fas fa-pen"></i></button>
+                            <button class="icon-btn delete-song" title="מחק" data-song-id="${song._id}"><i class="fas fa-trash"></i></button>
                         </div>
                     `;
                 divlistsongs.appendChild(songItem);
@@ -104,10 +105,9 @@ function showToast(message, timeout = 3000) {
     }
 }
 
-// load categories into select#songCategory
-async function loadCategories() {
-    const select = document.getElementById('songCategory');
-    if (!select) return;
+// load categories into select element
+async function loadCategories(selectElement = document.getElementById('songCategory'), selectedCategoryId = null) {
+    if (!selectElement) return;
     try {
         // include Authorization header if token exists because server applies JWT middleware
         const tokenNow = localStorage.getItem('authToken');
@@ -129,15 +129,19 @@ async function loadCategories() {
             }
         }
         // clear existing (keep first placeholder)
-        while (select.options.length > 1) select.remove(1);
+        while (selectElement.options.length > 1) selectElement.remove(1);
         categories.forEach(category => {
             const opt = document.createElement('option');
             opt.value = category._id;
             opt.textContent = category.name;
-            select.appendChild(opt);
+            if (selectedCategoryId && category._id === selectedCategoryId) {
+                opt.selected = true;
+            }
+            selectElement.appendChild(opt);
         });
     } catch (err) {
         console.error('Failed to load categories', err);
+        showToast('שגיאה בטעינת קטגוריות');
     }
 }
 
@@ -153,25 +157,7 @@ window.addEventListener('click', function (e) {
     if (addSongModal && e.target === addSongModal) addSongModal.style.display = 'none';
 });
 
-// helper to create song DOM item
-// function createSongElement({ title, categoryText, thumbUrl }) {
-//     const element = document.createElement('div');
-//     element.className = 'song-item';
-//     element.innerHTML = `
-//         ${thumbUrl ? `<img class="song-thumb" src="${thumbUrl}" alt="עטיפת שיר">` : ''}
-//         <div class="song-info">
-//             <h3>${title}</h3>
-//             <p class="song-meta">קטגוריה: ${categoryText} · הועלה: עכשיו</p>
-//         </div>
-//         <div class="song-actions">
-//             <button class="icon-btn edit-song" title="ערוך"><i class="fas fa-pen"></i></button>
-//             <button class="icon-btn delete-song" title="מחק"><i class="fas fa-trash"></i></button>
-//         </div>
-//     `;
-//     return element;
-// }
 
-// submit handler: post FormData to server and update UI
 const addSongForm = document.getElementById('addSongForm');
 if (addSongForm) {
     addSongForm.addEventListener('submit', async function (e) {
@@ -222,13 +208,7 @@ if (addSongForm) {
 
             const created = await resp.json();
             divlistsongs.innerHTML='';
-            // use returned data if available, otherwise local preview
-            // const thumbUrl = urlImgFile ? URL.createObjectURL(urlImgFile) : (created.urlImg || '');
-            // const songEl = createSongElement({ title: created.name || name, categoryText: created.categoryName || categoryText, thumbUrl });
-            // const songsList = document.getElementById('songsList');
-            // if (songsList) songsList.prepend(songEl);
-            // attachSongActionListeners(songEl);
-            // // close modal and reset
+            showToast('השיר נוסף בהצלחה!');
             ;if (addSongModal) addSongModal.style.display = 'none';
              addSongForm.reset();
 
@@ -399,28 +379,192 @@ async function handleUpdateProfileSubmit(e) {
         showToast('שגיאה בעדכון הפרופיל: ' + updateError.message);
     }
 }
+async function deleteSong(songId) {
+    try {
+        const tokenNow = localStorage.getItem('authToken');
+        const response = await fetch(`${baseURL}/api/songs/${songId}`, {   
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${tokenNow}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        
+        showToast('השיר נמחק בהצלחה!');
+        return true;
+    } catch (error) {
+        console.error('There was a problem with the delete request:', error);
+        showToast('שגיאה במחיקת השיר');
+        return false;
+    }
+}
+async function openEditSongModal(songId) 
+{
+    try {
+        // שליפת השיר מהשרת תמיד
+        let song;
+        try {
+            const tokenNow = localStorage.getItem('authToken');
+            const headers = {};
+            if (tokenNow) headers['Authorization'] = `Bearer ${tokenNow}`;
+            const resp = await fetch(`${baseURL}/api/songs/${songId}`, { headers });
+            if (!resp.ok) throw new Error('שגיאה בשליפת השיר מהשרת');
+            song = await resp.json();
+        } catch (err) {
+            showToast('לא נמצא שיר לעריכה');
+            return;
+        }
+
+        // יצירת המודאל
+        const editModalHtml = `
+            <div id="editSongModal" class="modal" style="display: block;">
+                <div class="modal-content">
+                    <span class="close" id="closeEditSongModal">&times;</span>
+                    <h2>עריכת שיר</h2>
+                    <form id="editSongForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="editSongTitle">שם השיר:</label>
+                            <input type="text" id="editSongTitle" name="name" value="${song.name}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSongCategory">קטגוריה:</label>
+                            <select id="editSongCategory" name="categoryId" required>
+                                <option value="">בחר קטגוריה</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSongFile">קובץ שיר חדש (אופציונלי):</label>
+                            <input type="file" id="editSongFile" name="urlSong" accept="audio/*">
+                            ${song.urlSong ? `<p>קובץ קיים: ${song.urlSong.split('/').pop()}</p>` : ''}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSongImage">תמונה חדשה (אופציונלי):</label>
+                            <input type="file" id="editSongImage" name="urlImg" accept="image/*">
+                            ${song.urlImg ? `<img src="${baseURL}/${song.urlImg}" alt="תמונה נוכחית" style="max-width: 100px; margin-top: 10px;">` : ''}
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit">שמור שינויים</button>
+                            <button type="button" id="cancelEditSong">בטל</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        
+        // הוספת המודאל לדף
+        document.body.insertAdjacentHTML('beforeend', editModalHtml);
+        
+        // טעינת הקטגוריות לתוך הselect תוך שימוש בפונקציה הקיימת
+        const categorySelect = document.getElementById('editSongCategory');
+        if (categorySelect) {
+            const currentCategoryId = song.categoryId._id;
+            
+            // שימוש בפונקציה הקיימת עם התאמה לselect של עריכה
+            await loadCategories(categorySelect, currentCategoryId);
+        }
+      
+        
+        // הוספת מאזינים
+        const editModal = document.getElementById('editSongModal');
+        const closeEditBtn = document.getElementById('closeEditSongModal');
+        const cancelEditBtn = document.getElementById('cancelEditSong');
+        const editForm = document.getElementById('editSongForm');
+        
+        function closeEditModal() {
+            if (editModal) editModal.remove();
+        }
+        
+        closeEditBtn.addEventListener('click', closeEditModal);
+        cancelEditBtn.addEventListener('click', closeEditModal);
+        editModal.addEventListener('click', (e) => {
+            if (e.target === editModal) closeEditModal();
+        });
+        
+        // טיפול בשליחת הטופס
+        editForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const name = document.getElementById('editSongTitle').value.trim();
+            const categoryId = document.getElementById('editSongCategory').value;
+            const songFile = document.getElementById('editSongFile').files[0];
+            const imageFile = document.getElementById('editSongImage').files[0];
+            
+            
+            // הוספת השדות רק אם הם קיימים או שונו
+            if (name && name !== song.name) formData.append('name', name);
+            if (categoryId && categoryId !== song.categoryId._id) formData.append('categoryId', categoryId);
+            if (songFile) formData.append('urlSong', songFile);
+            if (imageFile) formData.append('urlImg', imageFile);
+            
+            try {
+                const response = await fetch(`${baseURL}/api/songs/${songId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+                
+                showToast('השיר עודכן בהצלחה!');
+                closeEditModal();
+                divlistsongs.innerHTML = '';
+                await loadsongs(); // טעינה מחדש של הרשימה
+                
+            } catch (error) {
+                console.error('Error updating song:', error);
+                showToast('שגיאה בעדכון השיר: ' + error.message);
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error opening edit modal:', error);
+        showToast('שגיאה בפתיחת חלון העריכה');
+    }
+}
+
 
 // attach existing icon buttons using event delegation on songsList
 const songsList = document.getElementById('songsList');
 if (songsList) {
-    songsList.addEventListener('click', function (e) {
+    songsList.addEventListener('click', async function (e)
+     {
         const edit = e.target.closest('.icon-btn.edit-song');
         const del = e.target.closest('.icon-btn.delete-song');
         if (edit) {
-            alert('עריכת שיר - יש להוסיף טופס עריכה');
+            const songId = edit.getAttribute('data-song-id');
+            openEditSongModal(songId);
             return;
         }
         if (del) {
+            // קבלת מזהה השיר מהכפתור שנלחץ
+            const songId = del.getAttribute('data-song-id');
+            console.log('Song ID to delete:', songId); // לוג לבדיקה
             const item = del.closest('.song-item');
-            if (item && confirm('להסיר את השיר?')) {
+            
+            if (songId && confirm('להסיר את השיר?')) {
                 // revoke objectURL if any
                 if (item.dataset.thumbUrl) {
                     try { URL.revokeObjectURL(item.dataset.thumbUrl); } catch (e) { }
                 }
-                item.remove();
+
+                if (await deleteSong(songId)) {
+                    item.remove();
             }
-        }
+        }}
     });
+    
 }
 
 // פונקציה שמצרפת מאזינים לפריטים חדשים שנוצרו בדינאמיות

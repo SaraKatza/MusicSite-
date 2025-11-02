@@ -131,17 +131,7 @@ async function loadSongs(sortBy = 'creationDate', search = '') {
 
         updatePageTitle();
 
-        // const teaserMessage = document.getElementById('teaserMessage');
-        // const sortOptions = document.querySelector('.sort-options');
-        // if (!isLoggedIn) {
-        //     teaserMessage.style.display = 'block';
-        //     sortOptions.style.display = 'none';
-        // } else {
-        //     teaserMessage.style.display = 'none';
-        //     sortOptions.style.display = 'flex';
-        //     document.getElementById('recommendationsSection').style.display = 'block';
-        //     loadRecommendations();
-        // }
+       
     } catch (err) {
         console.error('שגיאה בטעינת השירים:', err);
         document.getElementById('songsGrid').innerHTML = `<p style="text-align: center; color: var(--text-color);">שגיאה: ${err.message}</p>`;
@@ -270,26 +260,7 @@ function searchSongs() {
     loadSongs('creationDate', searchTerm);
 }
 
-// המלצות
-// async function loadRecommendations() {
-//     try {
-//         const token = localStorage.getItem('authToken');
-//         const baseUrl = 'http://localhost:3000';
-//         const response = await fetch(`${baseUrl}/api/songs/recommendations`, {
-//             headers: { 'Authorization': `Bearer ${token}` }
-//         });
-//         if (!response.ok) return;
-//         const recs = await response.json();
-//         const grid = document.getElementById('recommendationsGrid');
-//         grid.innerHTML = '';
-//         recs.forEach(song => {
-//             const card = createSongCard(song, baseUrl);
-//             grid.appendChild(card);
-//         });
-//     } catch (err) {
-//         console.error(err);
-//     }
-// }
+
 
 // כרטיס שיר
 function createSongCard(song, baseUrl) {

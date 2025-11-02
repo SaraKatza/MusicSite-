@@ -1,5 +1,5 @@
 import express from "express";
-import { addSong, getSong,getRecommendations, getSongsByCategory,updateSong, deleteSong,downloadSong, getSongsBySinger, getAllSongs } from "../controllers/song.controllers.js";
+import { addSong, getSong,getSongsByCategory,updateSong, deleteSong,downloadSong, getSongsBySinger, getAllSongs } from "../controllers/song.controllers.js";
 import { isAdmin, isSinger, isAdminOrSingerSelf, authenticateJWT } from "../middlewares/auth.middleware.js";
 import { validateJoiSchema } from "../middlewares/validate.middleware.js";
 import { songValidator } from "../models/song.models.js";

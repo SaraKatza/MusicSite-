@@ -249,36 +249,3 @@ export async function getSingers(req, res, next) {
         next({ message: `Failed to retrieve singers: ${err.message}`, status: 500 });
     }
 }
-//המלצות
-export async function getRecommendations(req, res, next) {
-    try {
-        const userId = req.user.id;
-        const favorites = await Favorite.find({ userid: userId });
-        if (!favorites.length) return res.status(200).json([]);
-
-        const singerIds = favorites
-            .filter(f => f.songorsinger === 'singer')
-            .map(f => f.idsongorsinger);
-
-        const songIds = favorites
-            .filter(f => f.songorsinger === 'song')
-            .map(f => f.idsongorsinger);
-
-        const songCategories = await Song.find({ _id: { $in: songIds } }).distinct('categoryId');
-
-        const recommendations = await Song.find({
-            $or: [
-                { idSinger: { $in: singerIds } },
-                { categoryId: { $in: songCategories } }
-            ]
-        })
-            .sort({ DownloadCount: -1 })
-            .limit(10)
-            .populate('idSinger', 'name')
-            .populate('categoryId', 'name');
-
-        res.status(200).json(recommendations);
-    } catch (err) {
-        next({ message: `Failed to get recommendations: ${err.message}`, status: 500 });
-    }
-}

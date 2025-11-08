@@ -26,11 +26,11 @@ export const songValidator = {
         name: Joi.string().min(1),
         idSinger: Joi.string().hex().length(24),
         creationDate: Joi.date(),
-        categoQryId: Joi.string().hex().length(24),
-        urlSong: Joi.string().uri(),
-        urlImg: Joi.string().uri(),
+        categoryId: Joi.string().hex().length(24), // תיקון שם השדה
+        urlImg: Joi.string(),
+        urlSong: Joi.string(),
         DownloadCount: Joi.number().min(0),
-    }).min(1), // דורש לפחות שדה אחד לעדכון
+    })// דורש לפחות שדה אחד לעדכון
 };
 
 export const Song = model('Songs', songSchema);

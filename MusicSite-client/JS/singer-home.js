@@ -4,7 +4,7 @@ const baseURL = 'http://localhost:3000';
 let objdata = JSON.parse(localStorage.getItem('userData') || 'null');
 let token = localStorage.getItem('authToken');
 let divlistsongs = document.querySelector('.songs-list');
-let songs=[];
+let songs = [];
 
 // בדיקת התחברות והצגת ברכת שלום
 function checkLoginAndShowNav() {
@@ -32,9 +32,9 @@ function checkLoginAndShowNav() {
 }
 async function loadsongs() {
 
-        songs= await fetch(`${baseURL}/api/songs?singerId=${objdata.id}`, {
+    songs = await fetch(`${baseURL}/api/songs?singerId=${objdata.id}`, {
         method: 'GET',
-    })  
+    })
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -43,7 +43,7 @@ async function loadsongs() {
                 const songItem = document.createElement('div');
                 songItem.className = 'song-item';
                 songItem.dataset.songId = song._id; // הוספת מזהה השיר ל-dataset
-                    songItem.innerHTML = `
+                songItem.innerHTML = `
                         <img class="song-thumb" src="${song.urlImg ? `${baseURL}/${song.urlImg}` : ''}" alt="עטיפת שיר">    
                         <div class="song-info">
                             <h3>${song.name || 'שיר ללא שם'}</h3>
@@ -60,9 +60,9 @@ async function loadsongs() {
         .catch(error => {
             console.error('Error loading songs:', error);
         });
-} 
+}
 
-function fillDeatails() {
+async function fillDeatails() {
     console.log(objdata);
     nameSinger = document.querySelector('.singer-name');
     nameSinger.textContent = objdata.name;
@@ -207,10 +207,10 @@ if (addSongForm) {
             }
 
             const created = await resp.json();
-            divlistsongs.innerHTML='';
+            divlistsongs.innerHTML = '';
             showToast('השיר נוסף בהצלחה!');
-            ;if (addSongModal) addSongModal.style.display = 'none';
-             addSongForm.reset();
+            ; if (addSongModal) addSongModal.style.display = 'none';
+            addSongForm.reset();
 
             // // if we created a local objectURL for preview, store it so we can revoke on delete
             // if (urlImgFile) songEl.dataset.thumbUrl = thumbUrl;
@@ -265,27 +265,27 @@ function openUpdateProfileModal() {
             </div>
         </div>
     `;
-    
+
     // הוספת modal לעמוד
     document.body.insertAdjacentHTML('beforeend', updateModalHtml);
-    
+
     // הוספת מאזינים
     const updateModal = document.getElementById('updateProfileModal');
     const closeUpdateBtn = document.getElementById('closeUpdateProfileModal');
     const cancelUpdateBtn = document.getElementById('cancelUpdateProfile');
     const updateForm = document.getElementById('updateProfileForm');
-    
+
     // סגירת modal
     function closeUpdateModal() {
         if (updateModal) updateModal.remove();
     }
-    
+
     closeUpdateBtn.addEventListener('click', closeUpdateModal);
     cancelUpdateBtn.addEventListener('click', closeUpdateModal);
     updateModal.addEventListener('click', (e) => {
         if (e.target === updateModal) closeUpdateModal();
     });
-    
+
     // טיפול בשליחת הטופס
     updateForm.addEventListener('submit', handleUpdateProfileSubmit);
 }
@@ -293,50 +293,50 @@ function openUpdateProfileModal() {
 // פונקציה לטיפול בעדכון הפרופיל
 async function handleUpdateProfileSubmit(e) {
     e.preventDefault();
-    
+
     const currentToken = localStorage.getItem('authToken');
 
     if (!currentToken || !objdata) {
         showToast('עליך להיות מחובר כדי לעדכן פרופיל');
         return;
     }
-    
+
     const updateFormData = new FormData();
     const updatedName = document.getElementById('updateName').value.trim();
     const updatedEmail = document.getElementById('updateEmail').value.trim();
     const newPassword = document.getElementById('updatePassword').value.trim();
-    
-    if (!updatedName) { 
+
+    if (!updatedName) {
         showToast('אנא הכנס שם');
         return;
     }
-    
+
     if (!updatedEmail) {
         showToast('אנא הכנס אימייל');
         return;
     }
-    
+
     // הוספת נתוני הטקסט ל-FormData
     updateFormData.append('name', updatedName);
     updateFormData.append('email', updatedEmail);
     updateFormData.append('role', objdata.role || 'singer'); // שמירה על התפקיד הקיים
-    
+
     if (newPassword) {
         updateFormData.append('password', newPassword);
     }
     else {
         updateFormData.append('password', objdata.password);
-    }   
-    
+    }
+
     // איסוף הקובץ והוספתו ל-FormData - כמו בהרשמה
     const updateImgElement = document.getElementById("updateImage");
     const newImageFile = updateImgElement.files && updateImgElement.files[0];
 
     if (newImageFile) {
         // *** שם השדה חייב להיות 'img' כדי להתאים ל-Multer ***
-        updateFormData.append('img', newImageFile); 
+        updateFormData.append('img', newImageFile);
     }
-    
+
     try {
         const updateResponse = await fetch(`${baseURL}/api/users/${objdata.id}`, {
             method: 'PUT',
@@ -345,14 +345,14 @@ async function handleUpdateProfileSubmit(e) {
             },
             body: updateFormData
         });
-        
+
         if (!updateResponse.ok) {
             const errorMessage = await updateResponse.text();
             throw new Error(errorMessage || 'שגיאה בעדכון הפרופיל');
         }
-        
+
         const updatedUserData = await updateResponse.json();
-        
+
         // עדכון נתוני המשתמש בlocalStorage - בדיוק כמו בהרשמה
         localStorage.setItem('userData', JSON.stringify({
             id: updatedUserData._id,
@@ -361,19 +361,20 @@ async function handleUpdateProfileSubmit(e) {
             img: updatedUserData.img,
             role: updatedUserData.role
         }));
-        
+
         // עדכון המשתנה הגלובלי
         objdata = JSON.parse(localStorage.getItem('userData'));
-        
+        divlistsongs.innerHTML = '';
+       
         // עדכון הממשק
-        fillDeatails();
-        
+       await fillDeatails();
+
         showToast('הפרופיל עודכן בהצלחה!');
-        
+
         // סגירת modal
         const updateModal = document.getElementById('updateProfileModal');
         if (updateModal) updateModal.remove();
-        
+
     } catch (updateError) {
         console.error('Error updating profile:', updateError);
         showToast('שגיאה בעדכון הפרופיל: ' + updateError.message);
@@ -382,17 +383,17 @@ async function handleUpdateProfileSubmit(e) {
 async function deleteSong(songId) {
     try {
         const tokenNow = localStorage.getItem('authToken');
-        const response = await fetch(`${baseURL}/api/songs/${songId}`, {   
+        const response = await fetch(`${baseURL}/api/songs/${songId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${tokenNow}`
             }
         });
-        
+
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        
+
         showToast('השיר נמחק בהצלחה!');
         return true;
     } catch (error) {
@@ -401,8 +402,7 @@ async function deleteSong(songId) {
         return false;
     }
 }
-async function openEditSongModal(songId) 
-{
+async function openEditSongModal(songId) {
     try {
         // שליפת השיר מהשרת תמיד
         let song;
@@ -457,53 +457,76 @@ async function openEditSongModal(songId)
                 </div>
             </div>
         `;
-        
+
         // הוספת המודאל לדף
         document.body.insertAdjacentHTML('beforeend', editModalHtml);
-        
+
         // טעינת הקטגוריות לתוך הselect תוך שימוש בפונקציה הקיימת
         const categorySelect = document.getElementById('editSongCategory');
         if (categorySelect) {
             const currentCategoryId = song.categoryId._id;
-            
+
             // שימוש בפונקציה הקיימת עם התאמה לselect של עריכה
             await loadCategories(categorySelect, currentCategoryId);
         }
-      
-        
+
+
         // הוספת מאזינים
         const editModal = document.getElementById('editSongModal');
         const closeEditBtn = document.getElementById('closeEditSongModal');
         const cancelEditBtn = document.getElementById('cancelEditSong');
         const editForm = document.getElementById('editSongForm');
-        
+
         function closeEditModal() {
             if (editModal) editModal.remove();
         }
-        
+
         closeEditBtn.addEventListener('click', closeEditModal);
         cancelEditBtn.addEventListener('click', closeEditModal);
         editModal.addEventListener('click', (e) => {
             if (e.target === editModal) closeEditModal();
         });
-        
+
         // טיפול בשליחת הטופס
-        editForm.addEventListener('submit', async function(e) {
+        editForm.addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
             const formData = new FormData();
             const name = document.getElementById('editSongTitle').value.trim();
             const categoryId = document.getElementById('editSongCategory').value;
-            const songFile = document.getElementById('editSongFile').files[0];
-            const imageFile = document.getElementById('editSongImage').files[0];
-            
-            
+
+            let changed = false;
             // הוספת השדות רק אם הם קיימים או שונו
-            if (name && name !== song.name) formData.append('name', name);
-            if (categoryId && categoryId !== song.categoryId._id) formData.append('categoryId', categoryId);
-            if (songFile) formData.append('urlSong', songFile);
-            if (imageFile) formData.append('urlImg', imageFile);
-            
+            if (name && name !== song.name) {
+                formData.append('name', name);
+                changed = true;
+            }
+            if (categoryId && categoryId !== song.categoryId._id) {
+                formData.append('categoryId', categoryId);
+                changed = true;
+            }
+
+            // תמונה
+            const updateImgElement = document.getElementById("editSongImage");
+            const newImageFile = updateImgElement && updateImgElement.files && updateImgElement.files[0];
+            if (newImageFile) {
+                formData.append('urlImg', newImageFile);
+                changed = true;
+            }
+            // קובץ שיר
+            const updateSongElement = document.getElementById("editSongFile");
+            const newSongFile = updateSongElement && updateSongElement.files && updateSongElement.files[0];
+            if (newSongFile) {
+                formData.append('urlSong', newSongFile);
+                changed = true;
+            }
+
+            // אם לא שונה כלום - לא שולחים לשרת
+            if (!changed) {
+                showToast('לא בוצע שינוי. יש לשנות לפחות שדה אחד.');
+               
+            }
+
             try {
                 const response = await fetch(`${baseURL}/api/songs/${songId}`, {
                     method: 'PUT',
@@ -512,22 +535,22 @@ async function openEditSongModal(songId)
                     },
                     body: formData
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(await response.text());
                 }
-                
+
                 showToast('השיר עודכן בהצלחה!');
                 closeEditModal();
                 divlistsongs.innerHTML = '';
                 await loadsongs(); // טעינה מחדש של הרשימה
-                
+
             } catch (error) {
                 console.error('Error updating song:', error);
                 showToast('שגיאה בעדכון השיר: ' + error.message);
             }
         });
-        
+
     } catch (error) {
         console.error('Error opening edit modal:', error);
         showToast('שגיאה בפתיחת חלון העריכה');
@@ -538,8 +561,7 @@ async function openEditSongModal(songId)
 // attach existing icon buttons using event delegation on songsList
 const songsList = document.getElementById('songsList');
 if (songsList) {
-    songsList.addEventListener('click', async function (e)
-     {
+    songsList.addEventListener('click', async function (e) {
         const edit = e.target.closest('.icon-btn.edit-song');
         const del = e.target.closest('.icon-btn.delete-song');
         if (edit) {
@@ -552,7 +574,7 @@ if (songsList) {
             const songId = del.getAttribute('data-song-id');
             console.log('Song ID to delete:', songId); // לוג לבדיקה
             const item = del.closest('.song-item');
-            
+
             if (songId && confirm('להסיר את השיר?')) {
                 // revoke objectURL if any
                 if (item.dataset.thumbUrl) {
@@ -561,10 +583,11 @@ if (songsList) {
 
                 if (await deleteSong(songId)) {
                     item.remove();
+                }
             }
-        }}
+        }
     });
-    
+
 }
 
 // פונקציה שמצרפת מאזינים לפריטים חדשים שנוצרו בדינאמיות

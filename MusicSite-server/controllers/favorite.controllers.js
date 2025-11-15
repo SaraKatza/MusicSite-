@@ -1,4 +1,6 @@
 import { Favorite } from '../models/favorite.models.js';
+import { Song } from '../models/song.models.js';
+import { User } from '../models/user.models.js';
 import mongoose from 'mongoose';
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
@@ -7,23 +9,23 @@ const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 export async function addFavorite(req, res, next) {
     try {
         const userId = req.user._id;
-        const { type, itemId } = req.body; // type: 'song' או 'singer'
-        if (!isValidId(userId) || !isValidId(itemId)) return next({ message: 'Invalid id', status: 400 });
+        const { songorsinger, idsongorsinger } = req.body; // type: 'song' או 'singer'
+        if (!isValidId(userId) || !isValidId(idsongorsinger)) return next({ message: 'Invalid id', status: 400 });
         
         const exists = await Favorite.findOne({ 
             userid: userId, 
-            songorsinger: type, 
-            idsongorsinger: itemId 
+            songorsinger: songorsinger, 
+            idsongorsinger: idsongorsinger 
         });
         
         if (exists) {
-            return next({ message: 'Item already exists in favorites', status: 400 });
+            return next({ message: 'הפריט כבר קיים במועדפים!', status: 409 });
         }
         
         const favorite = await Favorite.create({ 
             userid: userId, 
-            songorsinger: type, 
-            idsongorsinger: itemId 
+            songorsinger: songorsinger, 
+            idsongorsinger: idsongorsinger 
         });
         
         res.status(201).json(favorite);
@@ -58,12 +60,34 @@ export async function removeFavorite(req, res, next) {
 export async function getFavoritesByUser(req, res, next) {
     try {
         const userId = req.user._id;
-        const favorites = await Favorite.find({ userid: userId })
-            .populate('idsongorsinger');
+        const favorites = await Favorite.find({ userid: userId });
+
+        // אם אין מועדפים — מחזירים מערך ריק עם 200
         if (!favorites.length) {
-            return next({ message: 'No favorites found', status: 204 });
+            return res.status(200).json([]);
         }
-        res.status(200).json(favorites);
+
+        // הוספת שמות שיר/אמן להחזרה (עבור song בלבד כרגע)
+        const songIds = favorites
+            .filter(f => f.songorsinger === 'song')
+            .map(f => f.idsongorsinger);
+
+        const songs = await Song.find({ _id: { $in: songIds } })
+            .populate('idSinger', 'name');
+        const songMap = new Map(
+            songs.map(s => [s._id.toString(), { songName: s.name, artistName: s.idSinger?.name || '' }])
+        );
+
+        const enriched = favorites.map(f => {
+            const base = f.toObject();
+            if (f.songorsinger === 'song') {
+                const extra = songMap.get(f.idsongorsinger.toString()) || { songName: '', artistName: '' };
+                return { ...base, ...extra };
+            }
+            return base;
+        });
+
+        res.status(200).json(enriched);
     } catch (err) {
         return next({ message: `Failed to retrieve favorites: ${err.message}`, status: 500 });
     }

@@ -30,7 +30,7 @@ function setupSearchInput() {
 function checkUserStatus() {
     const token = localStorage.getItem('authToken');
     const userData = localStorage.getItem('userData');
-    
+
     if (token && userData) {
         const user = JSON.parse(userData);
         showLoggedInNav(user.name || 'משתמש');
@@ -44,12 +44,12 @@ function showLoggedInNav(userName) {
     document.getElementById('guestNav').style.display = 'none';
     document.getElementById('userNav').style.display = 'flex';
     document.getElementById('welcomeMessage').textContent = `שלום, ${userName}`;
-    
+
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
         e.preventDefault();
         logout();
     });
-    
+
     document.getElementById('profileBtn').addEventListener('click', (e) => {
         e.preventDefault();
         goToProfile();
@@ -88,9 +88,9 @@ async function loadSongs(sortBy = 'creationDate', search = '') {
         const token = localStorage.getItem('authToken');
         const isLoggedIn = !!token;
         const baseUrl = 'http://localhost:3000';
-        
+
         let url = `${baseUrl}/api/songs?sortBy=${sortBy}&order=desc`;
-        
+
         // פילטר לפי קטגוריה
         if (currentFilter.type === 'category' && currentFilter.id) {
             url = `${baseUrl}/api/songs/by-category/${currentFilter.id}?sortBy=${sortBy}&order=desc`;
@@ -103,14 +103,14 @@ async function loadSongs(sortBy = 'creationDate', search = '') {
         if (search) {
             url += `&search=${encodeURIComponent(search)}`;
         }
-        
+
         // if (!isLoggedIn) url += '&limit=4';
 
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token || ''}` }
         });
         if (!response.ok) throw new Error('תקלה בטעינת השירים');
-        if(response.status === 204) {
+        if (response.status === 204) {
             document.getElementById('songsGrid').innerHTML = '<p style="text-align: center; color: var(--text-color); padding: 40px;">אין שירים מתאימים.</p>';
             return;
         }
@@ -131,7 +131,7 @@ async function loadSongs(sortBy = 'creationDate', search = '') {
 
         updatePageTitle();
 
-       
+
     } catch (err) {
         console.error('שגיאה בטעינת השירים:', err);
         document.getElementById('songsGrid').innerHTML = `<p style="text-align: center; color: var(--text-color);">שגיאה: ${err.message}</p>`;
@@ -174,13 +174,13 @@ async function openCategoryModal() {
         const response = await fetch(`${baseUrl}/api/categories`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        
+
         if (!response.ok) throw new Error('שגיאה בטעינת קטגוריות');
-        
+
         const categories = await response.json();
         const categoriesList = document.getElementById('categoriesList');
         categoriesList.innerHTML = '';
-        
+
         categories.forEach(category => {
             const item = document.createElement('div');
             item.className = 'selection-item';
@@ -188,7 +188,7 @@ async function openCategoryModal() {
             item.onclick = () => selectCategory(category._id, category.name);
             categoriesList.appendChild(item);
         });
-        
+
         document.getElementById('categoryModal').style.display = 'flex';
     } catch (err) {
         alert('שגיאה בטעינת רשימת הקטגוריות: ' + err.message);
@@ -213,18 +213,18 @@ async function openSingerModal() {
         const token = localStorage.getItem('authToken');
         const response = await fetch(`${baseUrl}/api/users?role=singer`, {
             method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` 
-          }
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
         });
-        
+
         if (!response.ok) throw new Error('שגיאה בטעינת זמרים');
-        
+
         const singers = await response.json();
         const singersList = document.getElementById('singersList');
         singersList.innerHTML = '';
-        
+
         singers.forEach(singer => {
             const item = document.createElement('div');
             item.className = 'selection-item';
@@ -232,7 +232,7 @@ async function openSingerModal() {
             item.onclick = () => selectSinger(singer._id, singer.name);
             singersList.appendChild(item);
         });
-        
+
         document.getElementById('singerModal').style.display = 'flex';
     } catch (err) {
         alert('שגיאה בטעינת רשימת הזמרים: ' + err.message);
@@ -275,11 +275,17 @@ function createSongCard(song, baseUrl) {
         </div>
         <h3>${song.name}</h3>
         <p class="song-artist">${song.idSinger?.name || 'זמר לא ידוע'}</p>
-        <p class="downloads">הורדות: ${song.DownloadCount}</p>
-        <button onclick="downloadSong('${song._id}')">הורד</button>
-        <button onclick="addFavorite('${song._id}', 'song')"><i class="fas fa-heart"></i></button>
+        <p class="downloads"><i class="fas fa-download"></i> ${song.DownloadCount} הורדות</p>
+        <div class="song-card-actions">
+            <button class="song-action-btn" onclick="addFavorite('${song._id}', 'song')" title="הוסף למועדפים">
+                <i class="fas fa-heart"></i>
+            </button>
+            <button class="song-action-btn" onclick="downloadSong('${song._id}')" title="הורד שיר">
+                <i class="fas fa-download"></i>
+            </button>
+        </div>
     `;
-    
+
     card.querySelector('.song-image-container').addEventListener('click', () => {
         playAudio(song._id, `${baseUrl}${song.urlSong}`, song.name, song.idSinger?.name || 'זמר לא ידוע', `${baseUrl}${song.urlImg}`);
     });
@@ -322,7 +328,7 @@ async function downloadSong(songId) {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('שגיאה בהורדה');
-        
+
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -330,7 +336,7 @@ async function downloadSong(songId) {
         a.download = `song-${songId}.mp3`;
         a.click();
         window.URL.revokeObjectURL(url);
-        
+
         loadSongs();
     } catch (err) {
         alert('שגיאה בהורדת השיר: ' + err.message);
@@ -366,7 +372,40 @@ document.getElementById('playPauseBtn').addEventListener('click', () => {
 });
 
 async function addFavorite(itemId, type) {
-    alert(`נוסף למועדפים: ${type} ${itemId}`);
+    const baseUrl = 'http://localhost:3000';
+    const token = localStorage.getItem('authToken');
+    const user = JSON.parse(localStorage.getItem('userData'));
+
+    if (user.role !== 'user') {
+        alert('רק משתמשים רגילים יכולים להוסיף למועדפים');
+        return;
+    }
+    const payload = {
+        userid: user.id,
+        songorsinger: "song",
+        idsongorsinger: itemId
+    };
+    try {
+        const response = await fetch(`${baseUrl}/api/favorites/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            let msg = 'שגיאה בהוספה למועדפים';
+            try {
+                const err = await response.json();
+                msg = err?.error?.message || msg;
+            } catch (_) { /* ignore parse errors */ }
+            throw new Error(msg);
+        }
+        alert('נוסף למועדפים');
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 function showSongEndToast() {

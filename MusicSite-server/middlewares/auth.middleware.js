@@ -12,7 +12,8 @@ export function isAdmin(req, res, next) {
 
 export function isSelf(req, res, next) {
     authenticateJWT(req, res, () => {
-        if (req.user && req.user._id.toString() === req.params.id) {
+        
+        if (req.user && req.user._id.toString() === (req.params.id|| req.body.userid)) {
             return next();
         }
         return res.status(403).json({ error: 'גישה אסורה - רק המשתמש עצמו יכול לעדכן' });

@@ -41,27 +41,37 @@
             <div class="profile-layout">
                 <!-- Sidebar: user card -->
                 <aside class="user-card">
-                    <div class="avatar-wrap">
-                        <div id="letterAvatar"  class="letter-avatar">U</div>
-                    </div>
-                    <div class="user-meta">
-                        <h2 id="userName">שם משתמש</h2>
-                        <p id="userEmail" class="muted">email@example.com</p>
-                        <div class="user-badges" id="userBadges"></div>
-                    </div>
-                    <div class="user-actions">
-                        <button class="btn" id="goToHome"><i class="fas fa-home"></i> דף הבית</button>
-                        <button class="btn logout-btn" id="logoutBtnSide"><i class="fas fa-sign-out-alt"></i> התנתק</button>
-                    </div>
-                    <div class="user-stats">
-                        <div class="stat"><span id="statFavorites">0</span><small>מועדפים</small></div>
+                    <!-- כרטיס 1: פרופיל -->
+                    <div class="profile-card compact user-profile-card">
+                        <div class="avatar-section">
+                            <div id="letterAvatar" class="letter-avatar">U</div>
+                        </div>
+                        
+                        <div class="user-info-section">
+                            <h2 id="userName">שם משתמש</h2>
+                            <p id="userEmail" class="muted">email@example.com</p>
+                            <div class="user-badges" id="userBadges"></div>
+                        </div>
                     </div>
 
-                    <div class="profile-card compact">
+                    <!-- כרטיס 2: כפתורים, מועדפים ופרטים אישיים -->
+                    <div class="profile-card compact actions-card">
+                        <div class="user-actions">
+                            <button class="btn" id="goToHome"><i class="fas fa-home"></i> דף הבית</button>
+                            <button class="btn logout-btn" id="logoutBtnSide"><i class="fas fa-sign-out-alt"></i> התנתק</button>
+                        </div>
+
+                        <div class="user-stats">
+                            <div class="stat"><span id="statFavorites">0</span><small>מועדפים</small></div>
+                        </div>
+
+                        <div class="divider"></div>
+
                         <div class="card-header">
                             <h3><i class="fas fa-id-card"></i> פרטים אישיים</h3>
                             <button class="btn small" id="toggleEditBtn"><i class="fas fa-user-edit"></i> עדכן פרטים</button>
                         </div>
+                        
                         <form id="editProfileForm" class="edit-profile-form" style="display:none;">
                             <div class="form-row">
                                 <label for="editName">שם</label>

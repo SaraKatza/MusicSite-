@@ -62,9 +62,9 @@ export async function getFavoritesByUser(req, res, next) {
         const userId = req.user._id;
         const favorites = await Favorite.find({ userid: userId });
 
-        // אם אין מועדפים — מחזירים מערך ריק עם 200
+        // אם אין מועדפים — מחזירים מערך ריק עם 204
         if (!favorites.length) {
-            return res.status(200).json([]);
+            return res.status(204).json([]);
         }
 
         // הוספת שמות שיר/אמן להחזרה (עבור song בלבד כרגע)

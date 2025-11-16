@@ -1,49 +1,47 @@
 // קובץ JavaScript עבור עמוד האיזור האישי
 const baseURL = "http://localhost:3000";
 // אופציה: רשימת אוואטארים רנדומליים (לשימוש עתידי). אפשר להחליף בנתיב לתמונות אצלך ב-public
-const RANDOM_AVATARS = [
-    // דוגמאות: 'public/avatars/1.png', 'public/avatars/2.png'
-];
+
 
 // בדיקת סטטוס המשתמש בטעינת העמוד
 document.addEventListener('DOMContentLoaded', function() {
     checkUserStatus();
     loadUserProfile();
-    // quick nav buttons
-    const goHome = document.getElementById('goToHome');
-    if (goHome) goHome.addEventListener('click', () => window.location.href = '../main.html');
-    const logoutSide = document.getElementById('logoutBtnSide');
-    if (logoutSide) logoutSide.addEventListener('click', (e) => { e.preventDefault(); logout(); });
-    // toggle edit/details
-    const toggleBtn = document.getElementById('toggleEditBtn');
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-            const form = document.getElementById('editProfileForm');
-            if (!form) return;
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    // כפתורי ניווט מהירים
+    const homeButton = document.getElementById('goToHome');
+    if (homeButton) homeButton.addEventListener('click', () => window.location.href = '../main.html');
+    const logoutSidebarButton = document.getElementById('logoutBtnSide');
+    if (logoutSidebarButton) logoutSidebarButton.addEventListener('click', (e) => { e.preventDefault(); logout(); });
+    // כפתור לפתיחת טופס עריכה
+    const toggleEditButton = document.getElementById('toggleEditBtn');
+    if (toggleEditButton) {
+        toggleEditButton.addEventListener('click', () => {
+            const profileEditForm = document.getElementById('editProfileForm');
+            if (!profileEditForm) return;
+            profileEditForm.style.display = profileEditForm.style.display === 'none' ? 'block' : 'none';
         });
     }
 
-    const form = document.getElementById('editProfileForm');
-    if (form) {
-        form.addEventListener('submit', submitProfileUpdate);
+    const profileEditForm = document.getElementById('editProfileForm');
+    if (profileEditForm) {
+        profileEditForm.addEventListener('submit', submitProfileUpdate);
     }
 });
 
 // פונקציה לבדיקת סטטוס המשתמש
 function checkUserStatus() {
-    const token = localStorage.getItem('authToken');
-    const userData = localStorage.getItem('userData');
+    const authToken = localStorage.getItem('authToken');
+    const storedUserJson = localStorage.getItem('userData');
     
-    if (!token || !userData) {
+    if (!authToken || !storedUserJson) {
         // אם המשתמש לא מחובר, הפנה לעמוד ההתחברות
         alert('יש להתחבר כדי לגשת לאיזור האישי');
         window.location.href = './login.html';
         return;
     }
     
-    const user = JSON.parse(userData);
-    showLoggedInNav(user.name || user.username || 'משתמש');
+    const currentUser = JSON.parse(storedUserJson);
+    showLoggedInNav(currentUser.name || currentUser.username || 'משתמש');
     
     // עמוד זה הוא למשתמשים בלבד – לא מציגים חלקים של זמרים
 }
@@ -77,130 +75,116 @@ function logout() {
 
 // טעינת פרטי המשתמש
 function loadUserProfile() {
-    const userData = localStorage.getItem('userData');
-    if (!userData) return;
+    const storedUserJson = localStorage.getItem('userData');
+    if (!storedUserJson) return;
     
-    const user = JSON.parse(userData);
-    // set avatar: prefer random image if list provided, else letter avatar
+    const currentUser = JSON.parse(storedUserJson);
     const letterEl = document.getElementById('letterAvatar');
-    if (RANDOM_AVATARS && RANDOM_AVATARS.length > 0) {
-        const idx = deterministicIndex(user.id || user.email || user.name || 'user', RANDOM_AVATARS.length);
-        const url = RANDOM_AVATARS[idx];
-        // אם בעתיד תשתמש/י בתמונות, אפשר להחליף את ה-div לתמונה. לעת עתה, נשמור על אות אם אין תמונות.
-        // למשל: create <img class="avatar-img" src="url" /> ולהחליף את התוכן
-        if (letterEl) {
-            letterEl.style.background = `center / cover no-repeat url('${url}')`;
-            letterEl.textContent = '';
-        }
-    } else if (letterEl) {
-        // Add class for default background image
+    if (letterEl) {
         letterEl.classList.add('with-image');
+        letterEl.style.backgroundImage = '';
         letterEl.textContent = '';
     }
-    const nmEl = document.getElementById('userName');
-    if (nmEl) nmEl.textContent = user.name || 'משתמש';
-    const emEl = document.getElementById('userEmail');
-    if (emEl) emEl.textContent = user.email || '';
-    const badges = document.getElementById('userBadges');
-    if (badges) {
-        badges.innerHTML = '';
+    const profileNameElement = document.getElementById('userName');
+    if (profileNameElement) profileNameElement.textContent = currentUser.name || 'משתמש';
+    const profileEmailElement = document.getElementById('userEmail');
+    if (profileEmailElement) profileEmailElement.textContent = currentUser.email || '';
+    const badgesContainer = document.getElementById('userBadges');
+    if (badgesContainer) {
+        badgesContainer.innerHTML = '';
         const roleBadge = `<span class="badge">משתמש</span>`;
-        badges.insertAdjacentHTML('beforeend', roleBadge);
+        badgesContainer.insertAdjacentHTML('beforeend', roleBadge);
     }
 
     // Pre-fill edit form
-    const editName = document.getElementById('editName');
-    const editEmail = document.getElementById('editEmail');
-    if (editName) editName.value = user.name || '';
-    if (editEmail) editEmail.value = user.email || '';
-    
-    // אין הצגת פרטים כפולה – רק הטופס יופיע בעת לחיצה
+    const nameInput = document.getElementById('editName');
+    const emailInput = document.getElementById('editEmail');
+    if (nameInput) nameInput.value = currentUser.name || '';
+    if (emailInput) emailInput.value = currentUser.email || '';
     
     // טעינת מועדפים
     loadFavorites();
     
-    // משתמש רגיל: מציגים רק מועדפים
 }
 
 // טעינת רשימת מועדפים מהשרת למשתמש
 async function loadFavorites() {
-    const token = localStorage.getItem('authToken');
-    const favoritesList = document.getElementById('favoritesList');
-    if (!favoritesList) return;
-    favoritesList.innerHTML = '<p>טוען...</p>';
+    const authToken = localStorage.getItem('authToken');
+    const favoritesListElement = document.getElementById('favoritesList');
+    if (!favoritesListElement) return;
+    favoritesListElement.innerHTML = '<p>טוען...</p>';
     try {
         const response = await fetch(`${baseURL}/api/favorites`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer ${authToken}` }
         });
         if (!response.ok) throw new Error('שגיאה בטעינת המועדפים');
         const favorites = await response.json();
         displayFavorites(favorites);
     } catch (err) {
         console.error('Favorites error:', err);
-        favoritesList.innerHTML = '<p>שגיאה בטעינת המועדפים</p>';
-        const statFav = document.getElementById('statFavorites');
-        if (statFav) statFav.textContent = '0';
+        favoritesListElement.innerHTML = '<p>שגיאה בטעינת המועדפים</p>';
+        const favoritesCountElement = document.getElementById('statFavorites');
+        if (favoritesCountElement) favoritesCountElement.textContent = '0';
     }
 }
 
 function displayFavorites(favorites) {
-    const favoritesList = document.getElementById('favoritesList');
-    const statFav = document.getElementById('statFavorites');
-    if (!favoritesList) return;
+    const favoritesListElement = document.getElementById('favoritesList');
+    const favoritesCountElement = document.getElementById('statFavorites');
+    if (!favoritesListElement) return;
     if (!favorites || favorites.length === 0) {
-        favoritesList.innerHTML = '<p>אין שירים מועדפים עדיין</p>';
-        if (statFav) statFav.textContent = '0';
+        favoritesListElement.innerHTML = '<p>אין שירים מועדפים עדיין</p>';
+        if (favoritesCountElement) favoritesCountElement.textContent = '0';
         return;
     }
-    favoritesList.innerHTML = favorites.map(f => `<div class="favorite-item"><p><strong>${f.songName}</strong> - ${f.artistName}</p></div>`).join('');
-    if (statFav) statFav.textContent = String(favorites.length);
+    favoritesListElement.innerHTML = favorites.map(f => `<div class="favorite-item"><p><strong>${f.songName}</strong> - ${f.artistName}</p></div>`).join('');
+    if (favoritesCountElement) favoritesCountElement.textContent = String(favorites.length);
 }
 
 async function submitProfileUpdate(e){
     e.preventDefault();
-    const statusEl = document.getElementById('profileFormStatus');
-    const token = localStorage.getItem('authToken');
-    const user = JSON.parse(localStorage.getItem('userData'));
-    if (!user || !user.id) { statusEl.textContent = 'שגיאה: אין משתמש מחובר'; return; }
+    const profileFormStatusElement = document.getElementById('profileFormStatus');
+    const authToken = localStorage.getItem('authToken');
+    const currentUser = JSON.parse(localStorage.getItem('userData'));
+    if (!currentUser || !currentUser.id) { profileFormStatusElement.textContent = 'שגיאה: אין משתמש מחובר'; return; }
 
-    const name = document.getElementById('editName').value.trim();
-    const email = document.getElementById('editEmail').value.trim();
-    const password = document.getElementById('editPassword').value;
+    const newName = document.getElementById('editName').value.trim();
+    const newEmail = document.getElementById('editEmail').value.trim();
+    const newPassword = document.getElementById('editPassword').value;
 
     // basic validation
-    if (!name) { statusEl.textContent = 'נא למלא שם'; return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { statusEl.textContent = 'אימייל לא תקין'; return; }
+    if (!newName) { profileFormStatusElement.textContent = 'נא למלא שם'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) { profileFormStatusElement.textContent = 'אימייל לא תקין'; return; }
 
-    const fd = new FormData();
-    fd.append('name', name);
-    fd.append('email', email);
-    if (password && password.length >= 6) fd.append('password', password);
+    const formData = new FormData();
+    formData.append('name', newName);
+    formData.append('email', newEmail);
+    if (newPassword && newPassword.length >= 6) formData.append('password', newPassword);
 
     try {
-        const res = await fetch(`${baseURL}/api/users/${user.id}`, {
+        const response = await fetch(`${baseURL}/api/users/${currentUser.id}`, {
             method: 'PUT',
-            headers: { 'Authorization': `Bearer ${token}` },
-            body: fd,
+            headers: { 'Authorization': `Bearer ${authToken}` },
+            body: formData,
         });
-        if (!res.ok) {
-            const txt = await res.text();
+        if (!response.ok) {
+            const txt = await response.text();
             throw new Error(txt || 'עדכון נכשל');
         }
-        const updated = await res.json();
-        // update localStorage format expected in app
-        const newUserData = {
-            id: updated._id || updated.id || user.id,
-            name: updated.name,
-            email: updated.email,
+        const updatedUser = await response.json();
+        const updatedUserData = {
+            id: updatedUser._id || updatedUser.id || currentUser.id,
+            name: updatedUser.name,
+            email: updatedUser.email,
             role: 'user',
-            img: updated.img,
+            img: updatedUser.img,
         };
-        localStorage.setItem('userData', JSON.stringify(newUserData));
-        statusEl.textContent = 'עודכן בהצלחה!';
+        localStorage.setItem('userData', JSON.stringify(updatedUserData));
+        profileFormStatusElement.textContent = 'עודכן בהצלחה!';
         loadUserProfile();
     } catch (err) {
         console.error('Update failed', err);
-        statusEl.textContent = 'שגיאה בעדכון: ' + err.message;
+        profileFormStatusElement.textContent = 'שגיאה בעדכון: ' + err.message;
     }
 }
 

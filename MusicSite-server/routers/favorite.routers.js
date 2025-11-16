@@ -1,6 +1,6 @@
 import express from "express";
 import { addFavorite, removeFavorite, getFavoritesByUser } from "../controllers/favorite.controllers.js";
-import { isSelf } from "../middlewares/auth.middleware.js";
+import { isSelf ,authenticateJWT} from "../middlewares/auth.middleware.js";
 import { validateJoiSchema } from "../middlewares/validate.middleware.js";
 import { favoriteValidator } from "../models/favorite.models.js";
 
@@ -14,6 +14,5 @@ router.post("/", isSelf, validateJoiSchema(favoriteValidator), addFavorite);
 router.delete("/:id", isSelf, removeFavorite);
 
 // קבלת כל המועדפים של המשתמש המחובר
-router.get("/", isSelf, getFavoritesByUser);
-
+router.get("/", authenticateJWT, getFavoritesByUser);
 export default router;

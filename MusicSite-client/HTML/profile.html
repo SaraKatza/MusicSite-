@@ -104,6 +104,44 @@
         </section>
     </main>
 
+    <!-- Music Player Bar -->
+    <div class="music-player-bar" id="musicPlayerBar" style="display: none;">
+        <div class="player-song-info">
+            <img id="playerSongImage" src="" alt="Song Cover" class="player-thumbnail">
+            <div class="player-text-info">
+                <div class="player-song-name" id="playerSongName">שם השיר</div>
+                <div class="player-artist-name" id="playerArtistName">שם האמן</div>
+            </div>
+        </div>
+        
+        <div class="player-controls-section">
+            <div class="player-buttons">
+                <button class="player-btn" id="prevBtn" title="הקודם">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button class="player-btn play-pause-btn" id="playPauseBtn" title="נגן/השהה">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button class="player-btn" id="nextBtn" title="הבא">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+            </div>
+            
+            <div class="player-progress">
+                <span class="time-current" id="currentTime">0:00</span>
+                <input type="range" id="progressBar" min="0" max="100" value="0" class="progress-slider">
+                <span class="time-total" id="totalTime">0:00</span>
+            </div>
+        </div>
+        
+        <div class="player-volume-section">
+            <button class="player-btn" id="volumeBtn" title="עוצמת קול">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <input type="range" id="volumeSlider" min="0" max="100" value="70" class="volume-slider">
+        </div>
+    </div>
+
     <script src="../JS/profile.js"></script>
 </body>
 </html>

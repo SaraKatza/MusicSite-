@@ -11,7 +11,7 @@ const router = express.Router();
 router.post("/", isSelf, validateJoiSchema(favoriteValidator), addFavorite);
 
 // מחיקת פריט מהמועדפים (משתמש מזוהה)
-router.delete("/:id", isSelf, removeFavorite);
+router.delete("/:id",authenticateJWT, removeFavorite);
 
 // קבלת כל המועדפים של המשתמש המחובר
 router.get("/", authenticateJWT, getFavoritesByUser);

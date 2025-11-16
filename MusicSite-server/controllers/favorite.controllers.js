@@ -75,7 +75,12 @@ export async function getFavoritesByUser(req, res, next) {
         const songs = await Song.find({ _id: { $in: songIds } })
             .populate('idSinger', 'name');
         const songMap = new Map(
-            songs.map(s => [s._id.toString(), { songName: s.name, artistName: s.idSinger?.name || '' }])
+            songs.map(s => [s._id.toString(), { 
+                songName: s.name, 
+                artistName: s.idSinger?.name || '',
+                urlImg: s.urlImg,
+                urlAudio: s.urlSong
+            }])
         );
 
         const enriched = favorites.map(f => {

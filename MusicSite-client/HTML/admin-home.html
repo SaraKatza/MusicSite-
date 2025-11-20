@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ניהול - MusicPlay</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/admin-dashboard.css">
+</head>
+<body>
+
+    <header class="header">
+        <nav class="navbar">
+            <a href="../main.html" class="logo">
+                <span class="logo-purple">Music</span><span class="logo-green">Play</span>
+            </a>
+            <div class="nav-links">
+                <a href="../main.html" class="auth-btn">דף הבית</a>
+                <a href="javascript:void(0)" class="auth-btn logout-btn" id="logoutBtn">התנתק</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="admin-layout">
+        <!-- סיידבאר ימני -->
+        <aside class="admin-sidebar">
+            <div class="admin-profile-card">
+                <div class="profile-image-container">
+                    <img src="" alt="תמונת פרופיל" class="admin-avatar" id="adminAvatar">
+                    <button class="edit-profile-pencil" id="editProfileBtn">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </div>
+                <h3 class="admin-name" id="adminName">טוען...</h3>
+                <p class="admin-role-badge">מנהל מערכת</p>
+
+                <nav class="admin-nav-menu">
+                    <button class="nav-item active" data-section="users">
+                        <i class="fas fa-users"></i> ניהול משתמשים
+                    </button>
+                    <button class="nav-item" data-section="categories">
+                        <i class="fas fa-tags"></i> ניהול קטגוריות
+                    </button>
+                    <button class="nav-item" data-section="admins">
+                        <i class="fas fa-user-shield"></i> ניהול מנהלים
+                    </button>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- תוכן ראשי -->
+        <main class="admin-main-content" id="adminContent">
+            <!-- ייטען דינמית -->
+        </main>
+    </div>
+
+    <!-- 1. מודאל עריכת פרופיל מנהל -->
+<div id="editProfileModal" class="custom-alert-modal">
+    <div class="modal-content large">
+        <span class="close-btn">×</span>
+        <h2>עריכת פרופיל מנהל</h2>
+        <form id="editProfileForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>שם מלא</label>
+                <input type="text" id="editName" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label>אימ  <label>אימייל</label>
+                <input type="email" id="editEmail" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label>סיסמה חדשה (השאר ריק אם לא רוצה לשנות)</label>
+                <input type="password" id="editPassword" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>תמונת פרופיל חדשה</label>
+                <input type="file" id="editImg" accept="image/*" class="form-input">
+                <img id="currentImgPreview" src="" alt="תמונה נוכחית" style="width:120px;height:120px;object-fit:cover;border-radius:50%;margin-top:10px;border:3px solid var(--primary-color);">
+            </div>
+            <button type="submit" class="btn primary">שמור שינויים</button>
+        </form>
+    </div>
+</div>
+
+<!-- 2. מודאל ניהול קטגוריות (כמו בדף הבית) -->
+<div id="categorySelectionModal" class="custom-alert-modal">
+    <div class="modal-content selection-modal">
+        <span class="close-btn">×</span>
+        <h2>ניהול קטגוריות</h2>
+        <div class="selection-list" id="categoriesAdminList">
+            <!-- ייטען דינמית -->
+        </div>
+    </div>
+</div>
+
+<!-- 3. מודאל הוספת קטגוריה חדשה -->
+<div id="addCategoryModal" class="custom-alert-modal">
+    <div class="modal-content">
+        <span class="close-btn">×</span>
+        <h2>הוסף קטגוריה חדשה</h2>
+        <div class="form-group">
+            <input type="text" id="newCategoryName" class="form-input" placeholder="שם הקטגוריה">
+        </div>
+        <button class="btn primary" id="saveNewCategory">שמור קטגוריה</button>
+    </div>
+</div>
+<!-- מודאל עריכת שם קטגוריה -->
+<div id="editCategoryModal" class="custom-alert-modal">
+    <div class="modal-content">
+        <span class="close-btn">×</span>
+        <h2>ערוך שם קטגוריה</h2>
+        <input type="text" id="editCategoryNameInput" class="form-input" placeholder="שם חדש לקטגוריה">
+        <input type="hidden" id="editCategoryId">
+        <div style="margin-top: 20px; text-align: center;">
+            <button class="btn primary" id="saveCategoryNameBtn">שמור שם חדש</button>
+        </div>
+    </div>
+</div>
+
+<!-- מודאל הוספת מנהל חדש -->
+<div id="adminModal" class="custom-alert-modal">
+    <div class="modal-content">
+        <span class="close-btn">×</span>
+        <h2>הוספת מנהל חדש</h2>
+        
+        <div class="form-group">
+            <label>שם מלא</label>
+            <input type="text" id="name" class="form-input" placeholder="שם המנהל" required>
+        </div>
+        
+        <div class="form-group">
+            <label>אימייל</label>
+            <input type="email" id="email" class="form-input" placeholder="admin@example.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label>סיסמה</label>
+            <input type="password" id="password" class="form-input" placeholder="סיסמה חזקה" required>
+        </div>
+       <button class="btn primary" id="saveAdminBtn">צור מנהל</button> 
+    </div>
+</div>
+
+    <script src="../JS/admin-home.js"></script>
+</body>
+</html>

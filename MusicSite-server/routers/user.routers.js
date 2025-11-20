@@ -29,8 +29,19 @@ const router = express.Router();       // מידלוואר לבדיקת הרשא
 router.get('/', getAllUsers);
 
 // יצירת משתמש חדש (רישום)
-router.post('/', upload.single("img"), validateJoiSchema(userValidator.register), register);
+// נתיב ציבורי לרישום רגיל (ללא role של admin/singer)
+router.post('/register', upload.single("img"), validateJoiSchema(userValidator.register), register);
+// נתיב מיוחד: מנהל יוצר מנהל חדש (מאפשר role: admin)
+router.post('/create-admin', 
+    authenticateJWT, 
+    isAdmin, 
+    upload.single("img"), 
+    validateJoiSchema(userValidator.register), 
+    register
+);
 
+// נתיב מוגן ליצירת משתמשים על ידי מנהל (מאפשר admin/singer)
+router.post('/create-by-admin', authenticateJWT, isAdmin, upload.single("img"), validateJoiSchema(userValidator.register), register);
 // התחברות משתמש
 router.post('/login', validateJoiSchema(userValidator.login), login);
 
@@ -41,5 +52,5 @@ router.get('/:id', isAdminOrSelf, getUser);
 router.put('/:id', upload.single("img"),  validateJoiSchema(userValidator.put), updateUser);
 
 // מחיקת משתמש לפי ID (מנהל בלבד)
-router.delete('/:id', deleteUser);
+router.delete('/:id', isAdmin, deleteUser);
 export default router;

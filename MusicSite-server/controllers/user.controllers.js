@@ -102,50 +102,61 @@ export async function updateUser(req, res, next) {
 // ------------------------------------------------------------------
 export async function register(req, res, next) {
     try {
-        const userData = req.body;
-        
-        // בדיקה אם הוא זמר אז אם הוא קיבל תמונה
-        if (req.body.role === 'singer' && !req.file) {
-            return next({ message: 'Image is required for singers', status: 400 });
-        }
+        const { name, email, password, role } = req.body;
 
-        // שמירת נתיב התמונה
-        if (req.file) {
-            const imgPath = `/uploads/${req.file.filename}`;
-            userData.img = imgPath;
-        }
-
-        // בדיקה אם המייל קיים כבר
-        const existingUser = await User.findOne({ email: userData.email });
+        // בדיקה אם יש כבר משתמש עם המייל
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return next({ message: 'Email already exists', status: 400 });
+            return next({ message: 'משתמש עם אימייל זה כבר קיים', status: 400 });
         }
 
-        // יצירת משתמש חדש
-        const user = new User(userData);
+        // קובץ תמונה - אם נשלח
+        let imgPath = null;
+        if (req.file) {
+            imgPath = `/uploads/${req.file.filename}`;
+        }
 
-        // יצירת טוקן JWT
-        const token = jwt.sign(
-            { id: user._id, role: user.role },
-            process.env.JWT_SECRET,
-            { expiresIn: TOKEN_EXPIRES } // ברירת מחדל: שבוע
-        );
+        // === החלק החשוב: מי מורשה ליצור admin? ===
+        let finalRole = role || 'user';
 
-        await user.save();
+        // אם זה לא מנהל ששולח – אסור לו לבחור admin
+        if (req.user && req.user.role === 'admin') {
+            // מנהל יכול ליצור גם admin, גם singer, גם user
+            if (role && ['admin', 'singer', 'user'].includes(role)) {
+                finalRole = role;
+            }
+        } else {
+            // משתמש רגיל או הרשמה רגילה – לא יכול לבחור admin
+            if (role === 'admin') {
+                return next({ message: 'אין הרשאה ליצור מנהל', status: 403 });
+            }
+            // זמר יכול לבחור singer, משתמש רגיל רק user
+            finalRole = role === 'singer' ? 'singer' : 'user';
+        }
 
-        // החזרת התגובה עם פרטי המשתמש והטוקן
-        res.status(201).json({
-            user: {
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                img: user.img, // התמונה מוחזרת
-            },
-            token,
+        const newUser = new User({
+            name,
+            email,
+            password,
+            role: finalRole,
+            img: imgPath
         });
+
+        await newUser.save();
+
+        res.status(201).json({
+            message: 'משתמש נוצר בהצלחה',
+            user: {
+                _id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role,
+                img: newUser.img
+            }
+        });
+
     } catch (err) {
-        return next({ message: `Failed to register user: ${err.message}`, status: 500 });
+        return next({ message: `שגיאה ביצירת משתמש: ${err.message}`, status: 500 });
     }
 }
 

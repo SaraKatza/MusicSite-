@@ -3,9 +3,9 @@ import bcrypt from "bcryptjs";
 import { Schema, model } from "mongoose";
 
 const userSchema = new Schema({
-    name: { type: String, required: true, trim: true, minlength: 2 },
-    password: { type: String, required: true, minlength: 6 },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    name: { type: String, trim: true, minlength: 2 },
+    password: { type: String,  minlength: 6 },
+    email: { type: String,  unique: true, lowercase: true, trim: true },
     img: { type: String }, // רק זמר
     role: { type: String, enum: ['admin', 'singer', 'user'], default: 'user' },
 });

@@ -76,7 +76,6 @@ async function login(event) {
             localStorage.setItem('userData', JSON.stringify({
                 id: data.user._id,
                 name: userName,
-                password: data.user.password,
                 email: data.user.email,
                 img: data.user.img,
                 role: data.user.role

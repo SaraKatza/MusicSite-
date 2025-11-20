@@ -38,7 +38,7 @@ router.post('/login', validateJoiSchema(userValidator.login), login);
 router.get('/:id', isAdminOrSelf, getUser);
 
 // עדכון משתמש לפי ID
-router.put('/:id', upload.single("img"),  validateJoiSchema(userValidator.register), updateUser);
+router.put('/:id', upload.single("img"),  validateJoiSchema(userValidator.put), updateUser);
 
 // מחיקת משתמש לפי ID (מנהל בלבד)
 router.delete('/:id', deleteUser);

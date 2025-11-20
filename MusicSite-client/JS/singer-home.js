@@ -324,9 +324,7 @@ async function handleUpdateProfileSubmit(e) {
     if (newPassword) {
         updateFormData.append('password', newPassword);
     }
-    else {
-        updateFormData.append('password', objdata.password);
-    }
+    
 
     // איסוף הקובץ והוספתו ל-FormData - כמו בהרשמה
     const updateImgElement = document.getElementById("updateImage");
@@ -368,7 +366,7 @@ async function handleUpdateProfileSubmit(e) {
        
         // עדכון הממשק
        await fillDeatails();
-
+        checkLoginAndShowNav();
         showToast('הפרופיל עודכן בהצלחה!');
 
         // סגירת modal

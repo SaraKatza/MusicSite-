@@ -234,7 +234,6 @@ document.getElementById('saveAdminBtn').addEventListener('click', async () => {
             body: formData
         });
         
-
         const result = await response.json();
 
         if (response.ok) {

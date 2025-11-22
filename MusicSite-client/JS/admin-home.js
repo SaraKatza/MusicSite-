@@ -301,3 +301,9 @@ window.addEventListener('click', e => {
         e.target.style.display = 'none';
     }
 });
+
+// פונקציית יציאה מהמערכת
+document.getElementById('logoutBtn').onclick = function() {
+    localStorage.clear();
+    window.location.href = '../main.html';
+};

@@ -33,16 +33,17 @@ router.get('/', getAllUsers);
 // יצירת משתמש חדש (רישום)
 router.post('/',authenticateJWT, upload.single("img"), validateJoiSchema(userValidator.register), register);
 // נתיב מיוחד: מנהל יוצר מנהל חדש (מאפשר role: admin)
-// router.post('/create-admin', 
-//     authenticateJWT, 
-//     isAdmin, 
-//     upload.single("img"), 
-//     validateJoiSchema(userValidator.register), 
-//     register
-// );
-
-// // נתיב מוגן ליצירת משתמשים על ידי מנהל (מאפשר admin/singer)
-// router.post('/create-by-admin', authenticateJWT, isAdmin, upload.single("img"), validateJoiSchema(userValidator.register), register);
+router.post('/create-admin', 
+    authenticateJWT, 
+    isAdmin, 
+    upload.single("img"), 
+    validateJoiSchema(userValidator.register), 
+    register
+);
+// מחיקת משתמש לפי ID (מנהל בלבד)
+router.delete('/:id', isAdmin, deleteUser);
+// נתיב מוגן ליצירת משתמשים על ידי מנהל (מאפשר admin/singer)
+router.post('/create-by-admin', authenticateJWT, isAdmin, upload.single("img"), validateJoiSchema(userValidator.register), register);
 // התחברות משתמש
 router.post('/login', validateJoiSchema(userValidator.login), login);
 
@@ -52,6 +53,5 @@ router.get('/:id', isAdminOrSelf, getUser);
 // עדכון משתמש לפי ID
 router.put('/:id', upload.single("img"),  validateJoiSchema(userValidator.put), updateUser);
 
-// מחיקת משתמש לפי ID (מנהל בלבד)
-router.delete('/:id', isAdmin, deleteUser);
+
 export default router;

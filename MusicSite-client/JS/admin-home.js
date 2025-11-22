@@ -39,10 +39,13 @@ loadSection('users');
 async function loadSection(section) {
     if (section === 'users') {
         contentArea.innerHTML = `
-            <h2 class="section-title">ניהול משתמשים וזמרים</h2>
-            <div class="user-filter-tabs">
-                <button class="user-filter-btn active" data-type="user">משתמשים רגילים</button>
-                <button class="user-filter-btn" data-type="singer">זמרים</button>
+            <div style="width:100%;max-width:1200px;margin:30px auto 0 auto;display:flex;flex-direction:column;align-items:flex-start;">
+                <h2 class="section-title" style="margin-bottom:10px;text-align:left;">ניהול משתמשים וזמרים</h2>
+                <div class="user-filter-tabs" style="display:flex;gap:10px;justify-content:flex-start;">
+                    <button class="user-filter-btn active" data-type="user">משתמשים רגילים</button>
+                    <button class="user-filter-btn" data-type="singer">זמרים</button>
+                </div>
+                <hr style="width:100vw;max-width:100%;margin:0 0 16px 0;border:none;border-top:2px solid #e0e0e0;">
             </div>
             <div id="usersGrid" class="users-grid"></div>
         `;
@@ -105,6 +108,8 @@ async function loadUsers(type) {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                // ניקוי שיר מתנגן מה-localStorage
+                localStorage.removeItem('currentSong');
                 loadUsers(type);
             }
         };

@@ -2,10 +2,9 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from 'mongoose';
-
-// import User from '../models/User.js';
-// import Song from '../models/Song.js';
-// import Favorite from '../models/Favorite.js';
+import {User} from '../models/user.models.js';
+import {Song} from '../models/song.models.js';
+import {Favorite} from '../models/favorite.models.js';
 
 // פונקציית עזר לבדיקת תקינות ID
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
@@ -207,23 +206,49 @@ export async function login(req, res, next) {
 }
 
 // ------------------------------------------------------------------
-// מחיקת משתמש לפי ID (מיועד למנהל)
+// // מחיקת משתמש לפי ID (מיועד למנהל)
 // ------------------------------------------------------------------
-// export async function deleteUser(req, res, next) {
-//     try {
-//         if (!isValidId(req.params.id)) return next({ message: 'Invalid user id', status: 400 });
+export async function deleteUser(req, res, next) {
+    try {
+        if (!isValidId(req.params.id)) return next({ message: 'Invalid user id', status: 400 });
 
-//         const user = await User.findByIdAndDelete(req.params.id);
+        // מציאת המשתמש לפני מחיקה
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return next({ message: 'User not found', status: 404 });
+        }
 
-//         if (!user) {
-//             return next({ message: 'User not found', status: 404 });
-//         }
-//         // קוד 204 No Content - הצלחה ללא גוף תגובה
-//         res.status(204).send();
-//     } catch (err) {
-//         return next({ message: `Server error: ${err.message}`, status: 500 });
-//     }
-// }
+        // אם מדובר בזמר – מוחקים את כל מה שקשור אליו
+        if (user.role === "singer") {
+            // 1. מציאת כל השירים של הזמר
+            const songs = await Song.find({ idSinger: req.params.id });
+            const songIds = songs.map(s => s._id);
+
+            // 2. מחיקת כל השירים עצמם
+            await Song.deleteMany({ idSinger: req.params.id });
+
+            // 3. מחיקת מועדפים – זמר עצמו
+            await Favorite.deleteMany({
+                songorsinger: "singer",
+                idsongorsinger: req.params.id
+            });
+
+            // 4. מחיקת מועדפים – כל שיר ששייך לזמר
+            await Favorite.deleteMany({
+                songorsinger: "song",
+                idsongorsinger: { $in: songIds }
+            });
+        }
+
+        // מחיקת המשתמש עצמו
+        await User.findByIdAndDelete(req.params.id);
+
+        // קוד 204 No Content - הצלחה ללא גוף תגובה
+        res.status(204).send();
+    } catch (err) {
+        return next({ message: `Server error: ${err.message}`, status: 500 });
+    }
+}
 
 
 

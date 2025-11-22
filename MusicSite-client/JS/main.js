@@ -323,7 +323,7 @@ function restoreSong() {
 async function downloadSong(songId) {
     const user = JSON.parse(localStorage.getItem('userData'));
     if (!user || user.role !== 'user') {
-            alert('רק משתמשים  יכולים להוסיף למועדפים');
+            alert('רק משתמשים  יכולים להוריד שירים ');
             return;
         }
     try {

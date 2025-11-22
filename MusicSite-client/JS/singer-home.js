@@ -32,34 +32,38 @@ function checkLoginAndShowNav() {
 }
 async function loadsongs() {
 
-    songs = await fetch(`${baseURL}/api/songs?singerId=${objdata.id}`, {
-        method: 'GET',
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            songs = data;
-            songs.forEach(song => {
-                const songItem = document.createElement('div');
-                songItem.className = 'song-item';
-                songItem.dataset.songId = song._id; // הוספת מזהה השיר ל-dataset
-                songItem.innerHTML = `
-                        <img class="song-thumb" src="${song.urlImg ? `${baseURL}/${song.urlImg}` : ''}" alt="עטיפת שיר">    
-                        <div class="song-info">
-                            <h3>${song.name || 'שיר ללא שם'}</h3>
-                            <p class="song-meta">קטגוריה: ${song.categoryId?.name || 'לא צויין'} · הועלה: ${new Date(song.creationDate).toLocaleDateString('he-IL')} · הורדות: ${song.DownloadCount ?? 0}</p>
-                        </div>
-                        <div class="song-actions">
-                            <button class="icon-btn edit-song" title="ערוך" data-song-id="${song._id}"><i class="fas fa-pen"></i></button>
-                            <button class="icon-btn delete-song" title="מחק" data-song-id="${song._id}"><i class="fas fa-trash"></i></button>
-                        </div>
-                    `;
-                divlistsongs.appendChild(songItem);
-            });
-        })
-        .catch(error => {
-            console.error('Error loading songs:', error);
+    divlistsongs.innerHTML = '';
+    try {
+        const response = await fetch(`${baseURL}/api/songs?singerId=${objdata.id}`, {
+            method: 'GET',
         });
+        const data = await response.json();
+        if (!Array.isArray(data) || data.length === 0) {
+            divlistsongs.innerHTML = '<div class="no-songs-message">לא קיימים שירים</div>';
+            return;
+        }
+        songs = data;
+        songs.forEach(song => {
+            const songItem = document.createElement('div');
+            songItem.className = 'song-item';
+            songItem.dataset.songId = song._id;
+            songItem.innerHTML = `
+                <img class="song-thumb" src="${song.urlImg ? `${baseURL}/${song.urlImg}` : ''}" alt="עטיפת שיר">    
+                <div class="song-info">
+                    <h3>${song.name || 'שיר ללא שם'}</h3>
+                    <p class="song-meta">קטגוריה: ${song.categoryId?.name || 'לא צויין'} · הועלה: ${new Date(song.creationDate).toLocaleDateString('he-IL')} · הורדות: ${song.DownloadCount ?? 0}</p>
+                </div>
+                <div class="song-actions">
+                    <button class="icon-btn edit-song" title="ערוך" data-song-id="${song._id}"><i class="fas fa-pen"></i></button>
+                    <button class="icon-btn delete-song" title="מחק" data-song-id="${song._id}"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            divlistsongs.appendChild(songItem);
+        });
+    } catch (error) {
+        console.error('Error loading songs:', error);
+        divlistsongs.innerHTML = '<div class="no-songs-message">שגיאה בטעינת שירים</div>';
+    }
 }
 
 async function fillDeatails() {
@@ -324,7 +328,7 @@ async function handleUpdateProfileSubmit(e) {
     if (newPassword) {
         updateFormData.append('password', newPassword);
     }
-    
+
 
     // איסוף הקובץ והוספתו ל-FormData - כמו בהרשמה
     const updateImgElement = document.getElementById("updateImage");
@@ -363,9 +367,9 @@ async function handleUpdateProfileSubmit(e) {
         // עדכון המשתנה הגלובלי
         objdata = JSON.parse(localStorage.getItem('userData'));
         divlistsongs.innerHTML = '';
-       
+
         // עדכון הממשק
-       await fillDeatails();
+        await fillDeatails();
         checkLoginAndShowNav();
         showToast('הפרופיל עודכן בהצלחה!');
 
@@ -522,7 +526,7 @@ async function openEditSongModal(songId) {
             // אם לא שונה כלום - לא שולחים לשרת
             if (!changed) {
                 showToast('לא בוצע שינוי. יש לשנות לפחות שדה אחד.');
-               
+
             }
 
             try {

@@ -70,6 +70,7 @@ export async function getAllSongs(req, res, next) {
             return next({ message: 'No songs found', status: 204 });
         }
         res.status(200).json(songs);
+        
     } catch (err) {
         return next({ message: `Failed to retrieve songs: ${err.message}`, status: 500 });
     }

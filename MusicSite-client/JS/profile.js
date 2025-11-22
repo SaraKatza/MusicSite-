@@ -1,4 +1,3 @@
-// קובץ JavaScript עבור עמוד האיזור האישי
 const baseURL = "http://localhost:3000";
 let objdata = JSON.parse(localStorage.getItem('userData') || 'null');
 

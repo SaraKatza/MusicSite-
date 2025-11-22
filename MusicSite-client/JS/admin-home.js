@@ -1,4 +1,3 @@
-// admin-dashboard.js - גרסה סופית ומושלמת
 const baseURL = 'http://localhost:3000';
 const token = localStorage.getItem('authToken');
 const userData = JSON.parse(localStorage.getItem('userData') || 'null');
@@ -301,9 +300,3 @@ window.addEventListener('click', e => {
         e.target.style.display = 'none';
     }
 });
-
-// פונקציית יציאה מהמערכת
-document.getElementById('logoutBtn').onclick = function() {
-    localStorage.clear();
-    window.location.href = '../main.html';
-};

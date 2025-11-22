@@ -2,7 +2,10 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from 'mongoose';
-import { User } from "../models/user.models.js";
+
+// import User from '../models/User.js';
+// import Song from '../models/Song.js';
+// import Favorite from '../models/Favorite.js';
 
 // פונקציית עזר לבדיקת תקינות ID
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
@@ -127,7 +130,7 @@ export async function register(req, res, next) {
             }
         } else {
             // משתמש רגיל או הרשמה רגילה – לא יכול לבחור admin
-            if (role === 'admin') {
+            if (role === 'admin'&& req.user?.role !== 'admin') {
                 return next({ message: 'אין הרשאה ליצור מנהל', status: 403 });
             }
             // זמר יכול לבחור singer, משתמש רגיל רק user
@@ -206,18 +209,75 @@ export async function login(req, res, next) {
 // ------------------------------------------------------------------
 // מחיקת משתמש לפי ID (מיועד למנהל)
 // ------------------------------------------------------------------
-export async function deleteUser(req, res, next) {
-    try {
-        if (!isValidId(req.params.id)) return next({ message: 'Invalid user id', status: 400 });
+// export async function deleteUser(req, res, next) {
+//     try {
+//         if (!isValidId(req.params.id)) return next({ message: 'Invalid user id', status: 400 });
 
-        const user = await User.findByIdAndDelete(req.params.id);
+//         const user = await User.findByIdAndDelete(req.params.id);
 
-        if (!user) {
-            return next({ message: 'User not found', status: 404 });
-        }
-        // קוד 204 No Content - הצלחה ללא גוף תגובה
-        res.status(204).send();
-    } catch (err) {
-        return next({ message: `Server error: ${err.message}`, status: 500 });
-    }
-}
+//         if (!user) {
+//             return next({ message: 'User not found', status: 404 });
+//         }
+//         // קוד 204 No Content - הצלחה ללא גוף תגובה
+//         res.status(204).send();
+//     } catch (err) {
+//         return next({ message: `Server error: ${err.message}`, status: 500 });
+//     }
+// }
+
+
+
+
+
+// export async function deleteUser(req, res, next) {
+//     try {
+//         const userId = req.params.id;
+
+//         // בדיקה תקינה
+//         if (!userId) {
+//             return next({ message: "Missing user id", status: 400 });
+//         }
+
+//         // מציאת המשתמש לפני מחיקה
+//         const user = await User.findById(userId);
+//         if (!user) {
+//             return next({ message: "User not found", status: 404 });
+//         }
+
+//         // ----------------------------------------------------------
+//         // אם מדובר בזמר – מוחקים את כל מה שקשור אליו
+//         // ----------------------------------------------------------
+//         if (user.role === "singer") {
+
+//             // 1. מציאת כל השירים של הזמר
+//             const songs = await Song.find({ idSinger: userId });
+//             const songIds = songs.map(s => s._id);
+
+//             // 2. מחיקת כל השירים עצמם
+//             await Song.deleteMany({ idSinger: userId });
+
+//             // 3. מחיקת מועדפים – זמר עצמו
+//             await Favorite.deleteMany({
+//                 songorsinger: "singer",
+//                 idsongorsinger: userId
+//             });
+
+//             // 4. מחיקת מועדפים – כל שיר ששייך לזמר
+//             await Favorite.deleteMany({
+//                 songorsinger: "song",
+//                 idsongorsinger: { $in: songIds }
+//             });
+//         }
+
+//         // ----------------------------------------------------------
+//         // מחיקת המשתמש עצמו
+//         // ----------------------------------------------------------
+//         await User.findByIdAndDelete(userId);
+
+//         return res.status(204).send(); // No Content – הצלחה בלי גוף תגובה
+
+//     } catch (err) {
+//         return next({ message: `Server error: ${err.message}`, status: 500 });
+//     }
+// }
+

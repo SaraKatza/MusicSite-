@@ -321,7 +321,13 @@ function restoreSong() {
 
 // // הורדת שיר
 async function downloadSong(songId) {
+    const user = JSON.parse(localStorage.getItem('userData'));
+    if (!user || user.role !== 'user') {
+            alert('רק משתמשים  יכולים להוסיף למועדפים');
+            return;
+        }
     try {
+        
         const baseUrl = 'http://localhost:3000';
         const token = localStorage.getItem('authToken');
         const response = await fetch(`${baseUrl}/api/songs/${songId}/download`, {
@@ -376,8 +382,8 @@ async function addFavorite(itemId, type) {
     const token = localStorage.getItem('authToken');
     const user = JSON.parse(localStorage.getItem('userData'));
 
-    if (user.role !== 'user') {
-        alert('רק משתמשים רגילים יכולים להוסיף למועדפים');
+    if (!user || user.role !== 'user') {
+        alert('רק משתמשים  יכולים להוסיף למועדפים');
         return;
     }
     const payload = {

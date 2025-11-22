@@ -209,9 +209,9 @@ async function loadAdmins() {
 }
 
 document.getElementById('saveAdminBtn').addEventListener('click', async () => {
-    const name = document.getElementById('adminName').value.trim();
-    const email = document.getElementById('adminEmail').value.trim();
-    const password = document.getElementById('adminPassword').value;
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
 
     if (!name || !email || !password) {
         alert('יש למלא את כל השדות');
@@ -222,11 +222,11 @@ document.getElementById('saveAdminBtn').addEventListener('click', async () => {
     formData.append('name', name);
     formData.append('email', email);
     formData.append('password', password);
-    formData.append('role', 'admin'); // חשוב!
+    formData.append('role', 'admin'); 
 
     try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch('http://localhost:3000/api/users/create-admin', {
+        const response = await fetch('http://localhost:3000/api/users/', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -239,7 +239,7 @@ document.getElementById('saveAdminBtn').addEventListener('click', async () => {
         if (response.ok) {
             alert('מנהל נוצר בהצלחה!');
             document.getElementById('adminModal').querySelector('.close-btn').click();
-            loadUsers(); // תרענן את הרשימה
+            loadAdmins() ;
         } else {
             alert(result.error?.message || 'שגיאה ביצירת מנהל');
         }
